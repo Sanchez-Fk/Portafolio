@@ -1,0 +1,207 @@
+/* ==========================================================================
+   05-COMPONENTS — piezas reutilizables
+   Fase 3: estados estáticos + hover mínimo funcional.
+   Los hovers elaborados y el magnetismo llegan en la Fase 4.
+   ========================================================================== */
+
+/* --- Botones ------------------------------------------------------------- */
+
+/* El boton del sistema NUNCA lleva relleno de color. Fondo transparente,
+   borde de 1px y texto blanco. La jerarquia entre primario y secundario se
+   marca con el brillo del borde, no con un color de marca. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+
+  /* 44px: objetivo tactil comodo sin romper la densidad del sistema */
+  min-height: 2.75rem;
+  padding: var(--space-xs) var(--space-sm);
+
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  letter-spacing: 0;
+  line-height: 1;
+  text-align: center;
+
+  background: transparent;
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-sm);
+  color: var(--c-fg);
+
+  transition: border-color var(--dur-fast) var(--ease-out),
+              background var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out);
+}
+
+/* Primario: el borde ya nace mas visible */
+.btn--primary { border-color: var(--c-line-strong); }
+.btn--primary:hover { border-color: var(--c-line-bright); background: rgba(255, 255, 255, 0.04); }
+
+/* Secundario: hairline base, se enciende al pasar */
+.btn--ghost { color: var(--c-fg-body); }
+.btn--ghost:hover { border-color: var(--c-line-strong); color: var(--c-fg); }
+
+
+/* --- Toggle de idioma ---------------------------------------------------- */
+
+.lang-toggle {
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-mono);
+  color: var(--c-fg-muted);
+  padding: var(--space-2xs) var(--space-xs);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-sm);
+  transition: color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out);
+}
+.lang-toggle:hover { color: var(--c-fg); border-color: var(--c-line-strong); }
+
+/* El idioma activo se marca en morado; el inactivo queda atenuado */
+/* El violeta pertenece al codigo, no a la UI: el idioma activo se marca
+   en blanco y el inactivo en muted, ambos legibles sobre negro. */
+.lang-toggle [data-lang-code] { color: var(--c-fg-muted); }
+.lang-toggle [data-lang-code].is-active { color: var(--c-fg); }
+
+
+/* --- Lista de tecnologías (dentro de un proyecto) ------------------------- */
+
+.project__stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  margin-top: var(--space-md);
+}
+
+/* Son identificadores tecnicos, no decoracion: mono y en el violeta de
+   marca, exactamente como el resaltado de sintaxis de un editor. */
+.project__stack li {
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-mono);
+  color: var(--c-accent);
+  padding: var(--space-3xs) var(--space-2xs);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-sm);
+}
+
+
+/* --- Rejilla del stack ---------------------------------------------------
+   Todas las tecnologias a la vez, sin envoltorio de tarjeta: solo las marcas
+   respirando sobre el negro, que es como el sistema pide una parrilla de
+   logos. Cada una flota con su propio desfase para que el conjunto se mueva
+   como algo vivo y no como una sola pieza subiendo y bajando.
+   ------------------------------------------------------------------------- */
+
+.stack__grid {
+  margin-top: var(--space-2xl);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-xl) var(--space-md);
+}
+
+@media (min-width: 640px)  { .stack__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .stack__grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-2xl) var(--space-lg); } }
+
+.stack__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  text-align: center;
+
+  color: var(--c-fg-muted);
+  transition: color var(--dur-base) var(--ease-out);
+
+  /* Desfase y ritmo propios por item. Los primos evitan que dos vecinos
+     caigan en fase y el conjunto parezca un solo bloque. */
+  animation: stack-float calc(5s + var(--i) * 0.37s) var(--ease-in-out) infinite;
+  animation-delay: calc(var(--i) * -0.83s);
+  will-change: transform;
+}
+
+@keyframes stack-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-9px); }
+}
+
+.stack__logo {
+  width: clamp(2rem, 1.4rem + 2.4vw, 3rem);
+  height: auto;
+  flex: none;
+  /* currentColor: el SVG se tine solo con el color del contenedor */
+  fill: currentColor;
+  transition: fill var(--dur-base) var(--ease-out),
+              transform var(--dur-base) var(--ease-back);
+}
+
+.stack__name {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-regular);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+
+/* --- Preloader ----------------------------------------------------------- */
+
+#preloader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-preloader);
+  background: var(--c-bg);
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+
+  padding: var(--gutter);
+  /* Sale deslizandose hacia arriba: se avisa al compositor */
+  will-change: transform;
+}
+
+.preloader__label {
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-mono);
+  color: var(--c-fg-muted);
+  margin-bottom: var(--space-2xs);
+}
+
+/* La serif del hero, para que el primer numero y el primer titular
+   pertenezcan visiblemente a la misma pieza. */
+.preloader__counter {
+  font-family: var(--font-display);
+  font-size: var(--fs-display);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  color: var(--c-fg);
+
+  /* Tabular: los digitos no bailan mientras sube la cuenta */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* El simbolo no compite con la cifra */
+.preloader__counter span:last-child {
+  font-size: 0.35em;
+  color: var(--c-fg-muted);
+  vertical-align: super;
+  margin-left: 0.12em;
+}
+
+.preloader__bar {
+  width: 100%;
+  height: 1px;
+  margin-top: var(--space-lg);
+  background: var(--c-line);
+}
+.preloader__bar::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: var(--progress, 0%);
+  background: var(--c-accent);
+}

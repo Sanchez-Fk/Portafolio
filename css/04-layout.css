@@ -1,0 +1,222 @@
+/* ==========================================================================
+   04-LAYOUT — contenedores, rejilla y ritmo vertical
+   Mobile-first. Breakpoints: 640 / 768 / 1024 / 1280
+   ========================================================================== */
+
+/* --- Sección: contenedor + ritmo ----------------------------------------- */
+
+main > section,
+.site-footer {
+  padding-inline: var(--gutter);
+}
+
+main > section {
+  padding-block: var(--space-section);
+  max-width: var(--container-max);
+  margin-inline: auto;
+  position: relative;
+  /* El header flota encima: sin esto las anclas dejan el titulo debajo de el */
+  scroll-margin-top: var(--header-h);
+}
+
+/* El hero manda su propio espaciado */
+.hero { padding-block: 0; }
+
+/* Línea divisoria entre secciones */
+main > section + section::before {
+  content: "";
+  position: absolute;
+  inset-inline: var(--gutter);
+  top: 0;
+  height: 1px;
+  background: var(--c-line);
+}
+
+
+/* --- Rejilla de 12 columnas ---------------------------------------------- */
+
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--grid-gap);
+}
+
+@media (min-width: 768px) {
+  .grid-12 { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+  .grid-12 { grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr)); }
+}
+
+
+/* --- Cabecera de sección: kicker numerado + título ------------------------ */
+
+.section__label {
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-mono);
+  color: var(--c-accent);
+  margin-bottom: var(--space-md);
+}
+
+/* 56px en peso 400 con -0.05em: la firma tipografica del sistema */
+.section__title {
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-heading);
+  line-height: var(--lh-heading);
+  color: var(--c-fg);
+  max-width: 16ch;
+}
+
+.section__lead {
+  font-size: var(--fs-lead);
+  line-height: var(--lh-tight);
+  color: var(--c-fg-muted);
+  margin-top: var(--space-lg);
+  max-width: 46ch;
+}
+
+
+/* --- Header -------------------------------------------------------------- */
+
+.site-header {
+  position: fixed;
+  top: 0;
+  inset-inline: 0;
+  z-index: var(--z-header);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+
+  min-height: var(--header-h);
+  padding-inline: var(--gutter);
+  /* Sin barra de fondo: el header flota sobre el contenido */
+}
+
+.site-header__brand {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-mono);
+  color: var(--c-fg);
+}
+
+/* En móvil la navegación vive en el footer y en los CTA del hero.
+   El menú desplegable con JS llega en la Fase 7; esto es su fallback. */
+.site-nav { display: none; }
+
+@media (min-width: 768px) {
+  .site-nav { display: block; }
+  .site-nav ul {
+    display: flex;
+    gap: var(--space-md);
+    font-size: var(--fs-sm);
+    color: var(--c-fg-body);
+  }
+}
+
+
+/* --- Hero ---------------------------------------------------------------- */
+
+/* La foto pasa a ser el fondo del hero, asi que el contenido vuelve a una
+   sola columna anclada abajo, sobre la zona oscurecida de la imagen. */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: end;
+  row-gap: var(--space-lg);
+  padding-block: calc(var(--header-h) + var(--space-lg)) var(--space-lg);
+}
+
+
+/* --- Sobre mí ------------------------------------------------------------ */
+
+.about__body { margin-top: var(--space-xl); }
+.about__body p + p { margin-top: var(--space-md); }
+
+@media (min-width: 1024px) {
+  .about {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: var(--grid-gap);
+  }
+  .about .section__label,
+  .about .section__title { grid-column: 1; }
+  .about__body {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    margin-top: 0;
+  }
+  .about__facts { grid-column: 1 / -1; }
+}
+
+
+/* --- Proyectos ----------------------------------------------------------- */
+
+.work__list { margin-top: var(--space-2xl); }
+
+
+/* --- Servicios ----------------------------------------------------------- */
+
+.services__list { margin-top: var(--space-2xl); }
+
+
+/* --- Proceso ------------------------------------------------------------- */
+
+.process__steps {
+  margin-top: var(--space-2xl);
+  display: grid;
+  gap: var(--space-xl);
+}
+
+@media (min-width: 768px)  { .process__steps { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .process__steps { grid-template-columns: repeat(4, 1fr); gap: var(--grid-gap); } }
+
+
+/* --- CTA final ----------------------------------------------------------- */
+
+.cta__paths {
+  margin-top: var(--space-2xl);
+  display: grid;
+  gap: var(--space-2xl);
+}
+
+@media (min-width: 900px) {
+  .cta__paths {
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  /* Línea divisoria entre los dos caminos */
+  .cta__path:first-child  { padding-right: var(--space-2xl); border-right: 1px solid var(--c-line); }
+  .cta__path:last-child   { padding-left: var(--space-2xl); }
+}
+
+
+/* --- Footer -------------------------------------------------------------- */
+
+.site-footer {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-block: var(--space-2xl);
+  border-top: 1px solid var(--c-line);
+
+  display: grid;
+  gap: var(--space-xl);
+}
+
+@media (min-width: 768px) {
+  .site-footer {
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    column-gap: var(--space-2xl);
+  }
+  .site-footer__meta { grid-column: 1 / -1; }
+}

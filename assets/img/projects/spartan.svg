@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800" role="img" aria-label="SPARTAN">
+  <rect width="1200" height="800" fill="#0E0B13"/>
+  <rect x="0.5" y="0.5" width="1199" height="799" fill="none" stroke="#432460" stroke-width="1"/>
+  <g fill="#9965CA" opacity="0.10">
+    <circle cx="980" cy="180" r="260"/>
+  </g>
+  <text x="80" y="400" font-family="'Space Grotesk',sans-serif" font-size="76" font-weight="700"
+        letter-spacing="-3" fill="#EDEAE4">SPARTAN</text>
+  <text x="80" y="452" font-family="monospace" font-size="24" letter-spacing="4" fill="#8A8590">Puntuacion en vivo</text>
+  <text x="80" y="720" font-family="monospace" font-size="20" letter-spacing="4" fill="#55505C">PLACEHOLDER 1200x800</text>
+</svg>

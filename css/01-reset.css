@@ -1,0 +1,81 @@
+/* ==========================================================================
+   01-RESET — base moderna, sin opiniones de diseño
+   ========================================================================== */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+* { margin: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100svh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select { font: inherit; color: inherit; }
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Evita que palabras largas (URLs, nombres técnicos) rompan el layout */
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+
+/* El balanceo de líneas mejora mucho los titulares grandes */
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+ul, ol {
+  list-style: none;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Anclas del nav: fallback nativo si Lenis no carga o si JS falla */
+html { scroll-behavior: smooth; }
+
+@media (prefers-reduced-motion: reduce) {
+  /* `.motion-forced` lo pone JS con ?motion=force, igual que en 02-tokens.css.
+     Sin este guardia, el override de desarrollo no llegaba a las animaciones
+     de @keyframes, solo a las duraciones de los tokens. */
+  :root:not(.motion-forced) { scroll-behavior: auto; }
+
+  :root:not(.motion-forced) *,
+  :root:not(.motion-forced) *::before,
+  :root:not(.motion-forced) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

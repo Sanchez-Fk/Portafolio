@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tokens — José Manuel Sánchez / Lumina Dev</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/01-reset.css">
+<link rel="stylesheet" href="css/02-tokens.css">
+
+<style>
+  /* Estilos SOLO de esta página de referencia. No forman parte del sitio. */
+  body {
+    background: var(--c-bg);
+    color: var(--c-fg);
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--ls-body);
+    padding: var(--space-2xl) var(--gutter) var(--space-3xl);
+  }
+  .wrap { max-width: var(--container-max); margin-inline: auto; }
+
+  .doc-title {
+    font-size: var(--fs-h2);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-heading);
+    letter-spacing: var(--ls-heading);
+  }
+  .doc-sub { color: var(--c-fg-muted); margin-top: var(--space-sm); max-width: var(--measure); }
+
+  h2.block {
+    font-size: var(--fs-label);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--c-accent-bright);
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--c-line);
+    margin: var(--space-3xl) 0 var(--space-lg);
+  }
+
+  /* --- paleta --- */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: var(--space-md); }
+  .sw__chip { height: 96px; border: 1px solid var(--c-line); border-radius: var(--radius-md); }
+  .sw__name { font-size: var(--fs-sm); font-weight: var(--fw-medium); margin-top: var(--space-2xs); }
+  .sw__meta { font-family: var(--font-mono); font-size: 0.75rem; color: var(--c-fg-muted); line-height: 1.5; }
+  .sw__ratio { color: var(--c-accent-bright); }
+
+  /* --- tipografía --- */
+  .type-row { padding: var(--space-md) 0; border-bottom: 1px solid var(--c-line); }
+  .type-tag { font-family: var(--font-mono); font-size: 0.75rem; color: var(--c-fg-muted); display: block; margin-bottom: var(--space-2xs); }
+  .t-display { font-size: var(--fs-display); line-height: var(--lh-display); letter-spacing: var(--ls-display); font-weight: var(--fw-bold); text-transform: uppercase; }
+  .t-h2      { font-size: var(--fs-h2);      line-height: var(--lh-heading); letter-spacing: var(--ls-heading); font-weight: var(--fw-bold); }
+  .t-marquee { font-size: var(--fs-marquee); line-height: var(--lh-heading); letter-spacing: var(--ls-heading); font-weight: var(--fw-medium); text-transform: uppercase; }
+  .t-numeral { font-size: var(--fs-numeral); line-height: 1; letter-spacing: var(--ls-heading); font-weight: var(--fw-light); color: var(--c-accent); }
+  .t-h3      { font-size: var(--fs-h3);      line-height: var(--lh-tight); letter-spacing: var(--ls-heading); font-weight: var(--fw-semibold); }
+  .t-lead    { font-size: var(--fs-lead);    line-height: var(--lh-tight); color: var(--c-fg); max-width: var(--measure); }
+  .t-body    { font-size: var(--fs-body);    line-height: var(--lh-body); max-width: var(--measure); }
+  .t-sm      { font-size: var(--fs-sm);      color: var(--c-fg-muted); }
+  .t-label   { font-size: var(--fs-label);   letter-spacing: var(--ls-label); text-transform: uppercase; font-weight: var(--fw-semibold); color: var(--c-fg-muted); }
+
+  .weights { display: flex; flex-wrap: wrap; gap: var(--space-lg); font-size: var(--fs-h3); letter-spacing: var(--ls-heading); }
+  .weights span { display: block; }
+  .weights small { display: block; font-family: var(--font-mono); font-size: 0.7rem; color: var(--c-fg-muted); letter-spacing: 0; }
+
+  /* --- espaciado --- */
+  .space-row { display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-2xs); }
+  .space-row code { font-family: var(--font-mono); font-size: 0.75rem; color: var(--c-fg-muted); min-width: 150px; }
+  .space-bar { height: 14px; background: var(--c-accent); border-radius: var(--radius-sm); }
+
+  /* --- easings --- */
+  .eases { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--space-md); }
+  .ease-demo { border: 1px solid var(--c-line); border-radius: var(--radius-md); padding: var(--space-md); background: var(--c-surface); }
+  .ease-demo code { font-family: var(--font-mono); font-size: 0.75rem; color: var(--c-fg-muted); }
+  .ease-track { height: 8px; background: var(--c-accent-a16); border-radius: var(--radius-pill); margin-top: var(--space-sm); position: relative; }
+  .ease-dot { position: absolute; inset-block: -5px; width: 18px; background: var(--c-accent); border-radius: var(--radius-pill); left: 0; }
+  .ease-demo:hover .ease-dot { left: calc(100% - 18px); }
+  .e1 .ease-dot { transition: left var(--dur-slow) var(--ease-out); }
+  .e2 .ease-dot { transition: left var(--dur-slow) var(--ease-expo); }
+  .e3 .ease-dot { transition: left var(--dur-slow) var(--ease-in-out); }
+  .e4 .ease-dot { transition: left var(--dur-slow) var(--ease-back); }
+
+  /* --- muestra aplicada --- */
+  .demo {
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius-md);
+    padding: var(--space-2xl) var(--space-xl);
+    background:
+      radial-gradient(120% 90% at 12% 0%, var(--c-accent-a08), transparent 60%),
+      var(--c-surface);
+  }
+  .demo__kicker { font-size: var(--fs-label); letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--c-accent-bright); font-weight: var(--fw-semibold); }
+  .demo__title { font-size: var(--fs-display); line-height: var(--lh-display); letter-spacing: var(--ls-display); font-weight: var(--fw-bold); text-transform: uppercase; margin-top: var(--space-md); }
+  .demo__title em { font-style: normal; color: var(--c-accent); }
+  .demo__intro { font-size: var(--fs-lead); line-height: var(--lh-tight); color: var(--c-fg-muted); max-width: 40ch; margin-top: var(--space-lg); }
+  .demo__actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-xl); }
+
+  .btn {
+    display: inline-block;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-pill);
+    transition: background var(--dur-base) var(--ease-out),
+                color var(--dur-base) var(--ease-out),
+                border-color var(--dur-base) var(--ease-out);
+  }
+  .btn--primary { background: var(--c-accent); color: var(--c-accent-ink); border: 1px solid var(--c-accent); }
+  .btn--primary:hover { background: var(--c-accent-bright); border-color: var(--c-accent-bright); }
+  .btn--ghost { border: 1px solid var(--c-line-strong); color: var(--c-fg); }
+  .btn--ghost:hover { border-color: var(--c-accent); color: var(--c-accent-bright); }
+
+  ::selection { background: var(--c-selection-bg); color: var(--c-selection-fg); }
+
+  .note { font-size: var(--fs-sm); color: var(--c-fg-muted); max-width: var(--measure); margin-top: var(--space-md); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="t-label">Fase 2 · Sistema de diseño</p>
+  <h1 class="doc-title">Tokens</h1>
+  <p class="doc-sub">
+    Página de referencia, no forma parte del sitio. Redimensiona la ventana para ver
+    la escala fluida interpolando entre 360px y 1440px.
+  </p>
+
+  <!-- ============ COLOR ============ -->
+  <h2 class="block">Color</h2>
+  <div class="swatches">
+    <div><div class="sw__chip" style="background:var(--c-bg)"></div>
+      <p class="sw__name">Fondo</p><p class="sw__meta">--c-bg<br>#08060B</p></div>
+    <div><div class="sw__chip" style="background:var(--c-surface)"></div>
+      <p class="sw__name">Superficie</p><p class="sw__meta">--c-surface<br>#0E0B13</p></div>
+    <div><div class="sw__chip" style="background:var(--c-fg)"></div>
+      <p class="sw__name">Texto</p><p class="sw__meta">--c-fg<br>#EDEAE4<br><span class="sw__ratio">16.8:1 · AAA</span></p></div>
+    <div><div class="sw__chip" style="background:var(--c-fg-muted)"></div>
+      <p class="sw__name">Texto atenuado</p><p class="sw__meta">--c-fg-muted<br>#8A8590<br><span class="sw__ratio">5.4:1 · AA</span></p></div>
+    <div><div class="sw__chip" style="background:var(--c-accent)"></div>
+      <p class="sw__name">Acento</p><p class="sw__meta">--c-accent<br>#9965CA<br><span class="sw__ratio">4.87:1 · AA</span></p></div>
+    <div><div class="sw__chip" style="background:var(--c-accent-bright)"></div>
+      <p class="sw__name">Acento claro</p><p class="sw__meta">--c-accent-bright<br>#C39DE7<br><span class="sw__ratio">7.8:1 · AAA</span></p></div>
+    <div><div class="sw__chip" style="background:var(--c-accent-deep)"></div>
+      <p class="sw__name">Acento profundo</p><p class="sw__meta">--c-accent-deep<br>#432460<br>bordes / glow</p></div>
+    <div><div class="sw__chip" style="background:var(--c-fg-faint)"></div>
+      <p class="sw__name">Tenue</p><p class="sw__meta">--c-fg-faint<br>#55505C<br>decorativo</p></div>
+  </div>
+  <p class="note">
+    El acento base pasa AA (4.87:1) pero va justo. Regla del sistema: para texto
+    pequeño se usa siempre <code>--c-accent-bright</code>; <code>--c-accent</code> queda
+    para fondos de botón, números grandes y elementos de UI.
+  </p>
+
+  <!-- ============ TIPOGRAFÍA ============ -->
+  <h2 class="block">Escala tipográfica</h2>
+
+  <div class="type-row"><span class="type-tag">--fs-display · 48 → 176px · lh 0.86 · ls -0.045em</span>
+    <p class="t-display">Full-stack</p></div>
+  <div class="type-row"><span class="type-tag">--fs-h2 · 36 → 88px</span>
+    <p class="t-h2">Proyectos destacados</p></div>
+  <div class="type-row"><span class="type-tag">--fs-marquee · 32 → 72px</span>
+    <p class="t-marquee">Node.js · WebSockets · Python</p></div>
+  <div class="type-row"><span class="type-tag">--fs-numeral · 28 → 56px</span>
+    <p class="t-numeral">01 02 03 04</p></div>
+  <div class="type-row"><span class="type-tag">--fs-h3 · 22 → 32px</span>
+    <p class="t-h3">Sistemas de reservas</p></div>
+  <div class="type-row"><span class="type-tag">--fs-lead · 18 → 28px</span>
+    <p class="t-lead">Construyo sistemas en tiempo real y sitios que le sirven a un negocio real.</p></div>
+  <div class="type-row"><span class="type-tag">--fs-body · 16 → 18px · lh 1.6</span>
+    <p class="t-body">Trabajo con Node.js, Python, React y WebSockets. Me muevo mejor en problemas donde el estado tiene que estar sincronizado entre varios clientes al mismo tiempo.</p></div>
+  <div class="type-row"><span class="type-tag">--fs-sm · 14 → 15px</span>
+    <p class="t-sm">Medellín, Colombia</p></div>
+  <div class="type-row"><span class="type-tag">--fs-label · 12px fijo · ls 0.18em</span>
+    <p class="t-label">Cliente Lumina Dev</p></div>
+
+  <h2 class="block">Pesos disponibles</h2>
+  <div class="weights">
+    <div><span style="font-weight:300">Sánchez</span><small>300 light</small></div>
+    <div><span style="font-weight:400">Sánchez</span><small>400 regular</small></div>
+    <div><span style="font-weight:500">Sánchez</span><small>500 medium</small></div>
+    <div><span style="font-weight:600">Sánchez</span><small>600 semibold</small></div>
+    <div><span style="font-weight:700">Sánchez</span><small>700 bold — tope</small></div>
+  </div>
+  <p class="note">
+    Space Grotesk no pasa de 700. Ese es el techo de "agresividad" tipográfica del sitio:
+    el peso ya no puede crecer, así que el impacto sale del tamaño y del tracking negativo.
+  </p>
+
+  <!-- ============ ESPACIADO ============ -->
+  <h2 class="block">Espaciado</h2>
+  <div class="space-row"><code>--space-3xs · 4</code><div class="space-bar" style="width:4px"></div></div>
+  <div class="space-row"><code>--space-2xs · 8</code><div class="space-bar" style="width:8px"></div></div>
+  <div class="space-row"><code>--space-xs · 12</code><div class="space-bar" style="width:12px"></div></div>
+  <div class="space-row"><code>--space-sm · 16</code><div class="space-bar" style="width:16px"></div></div>
+  <div class="space-row"><code>--space-md · 24</code><div class="space-bar" style="width:24px"></div></div>
+  <div class="space-row"><code>--space-lg · 32</code><div class="space-bar" style="width:32px"></div></div>
+  <div class="space-row"><code>--space-xl · 48</code><div class="space-bar" style="width:48px"></div></div>
+  <div class="space-row"><code>--space-2xl · 64</code><div class="space-bar" style="width:64px"></div></div>
+  <div class="space-row"><code>--space-3xl · 96</code><div class="space-bar" style="width:96px"></div></div>
+  <div class="space-row"><code>--space-section</code><div class="space-bar" style="width:var(--space-section)"></div></div>
+  <div class="space-row"><code>--gutter</code><div class="space-bar" style="width:var(--gutter)"></div></div>
+  <p class="note">Las dos últimas son fluidas: cambian de ancho al redimensionar.</p>
+
+  <!-- ============ MOVIMIENTO ============ -->
+  <h2 class="block">Movimiento — pasa el mouse por encima</h2>
+  <div class="eases">
+    <div class="ease-demo e1"><code>--ease-out<br>≈ power3.out · por defecto</code><div class="ease-track"><div class="ease-dot"></div></div></div>
+    <div class="ease-demo e2"><code>--ease-expo<br>salidas dramáticas</code><div class="ease-track"><div class="ease-dot"></div></div></div>
+    <div class="ease-demo e3"><code>--ease-in-out<br>transiciones simétricas</code><div class="ease-track"><div class="ease-dot"></div></div></div>
+    <div class="ease-demo e4"><code>--ease-back<br>rebote del cursor</code><div class="ease-track"><div class="ease-dot"></div></div></div>
+  </div>
+  <p class="note">
+    Duraciones: instant 100 · fast 180 · base 320 · slow 600 · reveal 900ms.
+    Con <code>prefers-reduced-motion</code> las cinco pasan a 1ms desde un único bloque
+    en el archivo de tokens, así que CSS y GSAP nunca se desincronizan.
+  </p>
+
+  <!-- ============ APLICADO ============ -->
+  <h2 class="block">Tokens aplicados</h2>
+  <div class="demo">
+    <p class="demo__kicker">Medellín, Colombia</p>
+    <h3 class="demo__title">José Manuel<br>Sánchez<br><em>Full-stack</em></h3>
+    <p class="demo__intro">Construyo sistemas en tiempo real y sitios que le sirven a un negocio real.</p>
+    <div class="demo__actions">
+      <a class="btn btn--primary" href="#">Ver proyectos</a>
+      <a class="btn btn--ghost" href="#">Trabajemos juntos</a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

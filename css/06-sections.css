@@ -1,0 +1,483 @@
+/* ==========================================================================
+   06-SECTIONS — estilos propios de cada sección
+   ========================================================================== */
+
+/* ==========================================================================
+   HERO
+   ========================================================================== */
+
+/* Serif editorial en peso 400. El impacto lo da el tamano y el aire,
+   no la negrita: por eso el sistema solo la usa aqui. */
+.hero__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-hero);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  font-weight: var(--fw-regular);
+  color: var(--c-fg);
+  max-width: 18ch;
+}
+
+.hero__line { display: block; }
+
+/* El rol va en cursiva de la misma serif: separa "quien soy" de "que hago"
+   sin recurrir al violeta, que en este sistema pertenece solo al codigo. */
+.hero__line:nth-child(2) { font-style: italic; color: var(--c-fg-body); }
+.hero__line:last-child   { color: var(--c-fg-muted); }
+
+/* --- Foto de fondo ---
+   Tres capas para que la vista caiga en el sujeto y no en el paisaje:
+     1. `filter`  la lleva casi a blanco y negro y la oscurece, para que
+        encaje en un sistema monocromo + un violeta.
+     2. `mask`    un foco radial sobre el sujeto: todo lo demas se desvanece
+        hasta desaparecer. Este es el "enfoque" propiamente dicho.
+     3. `::after` degradados por los bordes que sellan la imagen contra el
+        negro de la pagina y crean la zona legible para el texto.
+
+   El punto de foco y el encuadre son tokens: se mueven sin tocar el resto. */
+.hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+
+  --focus-x: 47%;
+  --focus-y: 46%;
+}
+
+.hero__media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+
+  filter: grayscale(0.8) contrast(1.2) brightness(0.85);
+
+  -webkit-mask-image: radial-gradient(
+    46% 52% at var(--focus-x) var(--focus-y),
+    #000 0%, rgba(0, 0, 0, 0.9) 34%, rgba(0, 0, 0, 0.42) 62%, transparent 92%);
+          mask-image: radial-gradient(
+    46% 52% at var(--focus-x) var(--focus-y),
+    #000 0%, rgba(0, 0, 0, 0.9) 34%, rgba(0, 0, 0, 0.42) 62%, transparent 92%);
+}
+
+/* Sellado contra el negro de la pagina */
+.hero__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    /* abajo: donde vive el texto */
+    linear-gradient(to top, var(--c-bg) 4%, rgba(0, 0, 0, 0.72) 26%, transparent 58%),
+    /* arriba: deja respirar al header */
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, transparent 26%);
+}
+
+.hero__intro {
+  font-size: var(--fs-lead);
+  line-height: var(--lh-tight);
+  color: var(--c-fg-muted);
+  max-width: 40ch;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.hero__scroll-hint {
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-mono);
+  color: var(--c-fg-ghost);
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 1fr auto auto;
+    column-gap: var(--grid-gap);
+  }
+
+  .hero__title   { grid-column: 1; grid-row: 1; align-self: end; max-width: 14ch; }
+  .hero__intro   { grid-column: 1; grid-row: 2; }
+  .hero__actions { grid-column: 2; grid-row: 2; align-self: end; }
+  .hero__scroll-hint { grid-column: 1 / -1; grid-row: 3; }
+
+  /* En pantalla ancha la imagen se desplaza a la derecha para que el sujeto
+     no quede debajo del titular. La foto es vertical: con `cover` a lo ancho
+     no hay margen horizontal que mover, asi que se ensancha y se corre. */
+  .hero__media img {
+    width: 112%;
+    left: 20%;
+    right: auto;
+    object-position: 50% 26%;
+  }
+
+  .hero__media {
+    --focus-x: 70%;
+    --focus-y: 44%;
+  }
+
+  /* El texto vive a la izquierda: ahi el sellado tiene que ser mas opaco */
+  .hero__media::after {
+    background:
+      linear-gradient(to right, var(--c-bg) 6%, rgba(0, 0, 0, 0.78) 30%, transparent 62%),
+      linear-gradient(to top, var(--c-bg) 2%, rgba(0, 0, 0, 0.6) 22%, transparent 52%),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 22%);
+  }
+}
+
+
+/* ==========================================================================
+   SOBRE MÍ
+   ========================================================================== */
+
+.about__body p {
+  font-size: var(--fs-lead);
+  line-height: var(--lh-tight);
+}
+.about__body p:not(:first-child) {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--c-fg-muted);
+}
+
+.about__facts {
+  margin-top: var(--space-2xl);
+  display: grid;
+  gap: var(--space-lg);
+  border-top: 1px solid var(--c-line);
+  padding-top: var(--space-lg);
+}
+
+@media (min-width: 768px) {
+  .about__facts { grid-template-columns: repeat(3, 1fr); gap: var(--grid-gap); }
+}
+
+.about__fact dt {
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-mono);
+  /* --c-fg-ghost daria 2.2:1 sobre negro. Esto es una etiqueta de contenido
+     real, no decoracion, asi que va en el muted de 8.1:1. */
+  color: var(--c-fg-muted);
+  margin-bottom: var(--space-2xs);
+}
+.about__fact dd { font-size: var(--fs-body); color: var(--c-fg-body); }
+
+
+/* ==========================================================================
+   PROYECTOS
+   ========================================================================== */
+
+.project {
+  position: relative;
+  border-top: 1px solid var(--c-line);
+  padding-block: var(--space-xl);
+}
+.project:last-child { border-bottom: 1px solid var(--c-line); }
+
+.project__index {
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-mono);
+  color: var(--c-accent);
+  margin-bottom: var(--space-sm);
+}
+
+.project__title {
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-medium);
+  letter-spacing: -0.02em;
+  line-height: var(--lh-heading);
+  color: var(--c-fg);
+}
+.project__title a { display: inline-block; }
+
+.project__type {
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-mono);
+  color: var(--c-fg-muted);
+  margin-top: var(--space-2xs);
+}
+
+.project__desc {
+  margin-top: var(--space-md);
+  color: var(--c-fg-muted);
+  max-width: 58ch;
+}
+
+.project__media {
+  margin-top: var(--space-lg);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--c-surface);
+}
+.project__media img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+/* Placeholder: mientras no haya proyecto real de cliente, se atenúa */
+.project--placeholder { opacity: 0.45; }
+
+@media (min-width: 1024px) {
+
+  /* --- Carrusel horizontal ---
+     La seccion se fija en pantalla y el scroll vertical mueve el track a lo
+     ancho. La clase `is-horizontal` la pone horizontal.js: si GSAP no carga,
+     nada de esto se activa y la lista se queda en vertical, legible. */
+
+  .work.is-horizontal {
+    /* ALTURA EXACTA, no min-height: al fijar la seccion, todo lo que
+       sobrepase la ventana queda cortado y es inalcanzable. Con
+       `min-height` + el padding de seccion la caja media 1249px en una
+       ventana de 820px y el fondo de las tarjetas no se veia nunca. */
+    height: 100svh;
+    padding-block: calc(var(--header-h) + var(--space-md)) var(--space-lg);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* El titulo no debe comerse el alto disponible del carrusel */
+  .work.is-horizontal .section__label { margin-bottom: var(--space-2xs); }
+
+  .work.is-horizontal .work__viewport {
+    overflow: hidden;
+    margin-top: var(--space-lg);
+    /* Ocupa el alto que quede libre y no mas */
+    min-height: 0;
+    flex: 1;
+    display: flex;
+    /* stretch, no center: las tarjetas ocupan justo el alto disponible */
+    align-items: stretch;
+  }
+
+  .work.is-horizontal .work__list {
+    display: flex;
+    align-items: stretch;
+    gap: var(--grid-gap);
+    width: max-content;
+    /* Aire al final para que la ultima tarjeta no muera pegada al borde */
+    padding-right: var(--gutter);
+    margin-top: 0;
+  }
+
+  .work.is-horizontal .project {
+    flex: none;
+    width: clamp(21rem, 34vw, 30rem);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+  }
+  .work.is-horizontal .project:last-child { border-bottom: 1px solid var(--c-line); }
+
+  /* La imagen pasa arriba de la tarjeta y absorbe el alto que sobra, en vez
+     de imponer su proporcion y hacer que la tarjeta desborde el carrusel. */
+  .work.is-horizontal .project__media {
+    order: -1;
+    margin-top: 0;
+    margin-bottom: var(--space-md);
+    flex: 1 1 auto;
+    min-height: 7rem;
+  }
+  .work.is-horizontal .project__media img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    object-fit: cover;
+  }
+
+  /* El texto no puede crecer sin limite o volveria a empujar la tarjeta */
+  .work.is-horizontal .project__desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .work.is-horizontal .project__desc  { font-size: var(--fs-sm); }
+  .work.is-horizontal .project__title { font-size: var(--fs-h3); }
+
+  /* El stack se pega al fondo para que todas las tarjetas cierren igual */
+  .work.is-horizontal .project__stack { padding-top: var(--space-md); }
+}
+
+/* En una tarjeta del carrusel la imagen NO se esconde: una galeria horizontal
+   sin imagenes no dice nada. Se muestra apagada y el hover la enciende. */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .work.is-horizontal .project__media {
+    opacity: 0.55;
+    transition: opacity var(--dur-base) var(--ease-out);
+  }
+  .work.is-horizontal .project:hover .project__media,
+  .work.is-horizontal .project:focus-within .project__media { opacity: 1; }
+}
+
+
+/* ==========================================================================
+   MASCARA DE LAS LINEAS DE TEXTO (split-type)
+   Las clases las crea reveals.js. Sin JS no existen y no pasa nada.
+   ========================================================================== */
+
+.reveal-line {
+  overflow: hidden;
+  /* La mascara recorta por los cuatro lados. Se compensa con padding y se
+     devuelve con margin negativo, asi no altera el layout:
+       - abajo: las colas de g, j, y. La serif italica del hero las tiene
+         largas, por eso 0.3em y no un valor simbolico.
+       - a los lados: la inclinacion de la italica se sale de la caja. */
+  padding-bottom: 0.3em;
+  margin-bottom: -0.3em;
+  padding-inline: 0.12em;
+  margin-inline: -0.12em;
+}
+
+.reveal-word { display: inline-block; will-change: transform; }
+
+
+/* ==========================================================================
+   SERVICIOS
+   ========================================================================== */
+
+.service {
+  border-top: 1px solid var(--c-line);
+  padding-block: var(--space-lg);
+}
+.service:last-child { border-bottom: 1px solid var(--c-line); }
+
+.service h3 { color: var(--c-fg); }
+.service p {
+  margin-top: var(--space-2xs);
+  color: var(--c-fg-muted);
+  max-width: 52ch;
+}
+
+@media (min-width: 768px) {
+  .service {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    column-gap: var(--grid-gap);
+    align-items: baseline;
+  }
+  .service p { margin-top: 0; }
+}
+
+
+/* ==========================================================================
+   PROCESO
+   ========================================================================== */
+
+.step { border-top: 1px solid var(--c-line); padding-top: var(--space-md); }
+
+.step__num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-numeral);
+  font-weight: var(--fw-regular);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--c-accent);
+  margin-bottom: var(--space-md);
+}
+
+.step h3 { color: var(--c-fg); }
+
+/* Se apunta al parrafo que sigue al h3, no a "todo p dentro de .step":
+   `.step p` tenia mas especificidad que `.step__num` y se lo comia. */
+.step h3 + p {
+  margin-top: var(--space-2xs);
+  font-size: var(--fs-sm);
+  color: var(--c-fg-muted);
+}
+
+
+/* ==========================================================================
+   CTA FINAL
+   ========================================================================== */
+
+.cta__path h3 {
+  font-size: var(--fs-h3);
+  max-width: 20ch;
+  color: var(--c-fg);
+}
+.cta__path > p {
+  margin-top: var(--space-md);
+  color: var(--c-fg-muted);
+  max-width: 42ch;
+}
+
+.cta__links {
+  margin-top: var(--space-xl);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: var(--fs-sm);
+}
+
+/* Los links secundarios se subrayan al pasar por encima */
+.cta__links a:not(.btn) {
+  color: var(--c-fg-muted);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.3em;
+  transition: color var(--dur-fast) var(--ease-out),
+              text-decoration-color var(--dur-fast) var(--ease-out);
+}
+.cta__links a:not(.btn):hover {
+  color: var(--c-accent-bright);
+  text-decoration-color: currentColor;
+}
+
+/* El botón ocupa toda la fila para que no compita con los links */
+.cta__links li:first-child { flex-basis: 100%; }
+
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+
+.site-footer__brand {
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-regular);
+  letter-spacing: var(--ls-heading);
+  color: var(--c-fg);
+  max-width: 24ch;
+}
+
+.site-footer__social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+  font-size: var(--fs-sm);
+  color: var(--c-fg-muted);
+}
+.site-footer__social a { transition: color var(--dur-fast) var(--ease-out); }
+.site-footer__social a:hover { color: var(--c-accent-bright); }
+
+.site-footer__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  max-width: none;
+
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--c-line);
+
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-mono);
+  color: var(--c-fg-muted);
+}

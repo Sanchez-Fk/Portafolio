@@ -1,0 +1,235 @@
+/* ==========================================================================
+   02-TOKENS — sistema de diseño
+   José Manuel Sánchez / Lumina Dev
+
+   Basado en el sistema de Resend: negro absoluto, bordes de 1px en grafito,
+   tipografía blanca, un solo violeta de marca y monoespaciada para todo lo
+   que huela a código.
+
+   DESVIACIÓN DELIBERADA: Resend exige fondo negro plano y prohíbe gradientes
+   y washes. Aquí el fondo lleva capas (rejilla + grano + bloom del hero) por
+   decisión de producto. Todo eso vive aislado en 08-canvas.css, así que
+   revertirlo es quitar un <link>. El resto del sistema se respeta.
+
+   Los valores fluidos usan interpolación real entre 360px y 1440px:
+     clamp(min, intercepto + pendiente*100vw, max)
+   ========================================================================== */
+
+:root {
+
+  /* ---------------------------------------------------------------
+     COLOR
+     Monocromo + un violeta. Los colores de estado (verde, azul, rojo,
+     ámbar) están reservados para datos, nunca para decorar UI.
+     --------------------------------------------------------------- */
+
+  --c-bg:             #000000;   /* void: el lienzo entero */
+  --c-surface:        #0B0E14;   /* paneles elevados */
+  --c-surface-hover:  #101520;
+
+  /* Gradiente de superficie: lo único que "levanta" una tarjeta del lienzo */
+  --grad-surface:     linear-gradient(rgb(17, 17, 19), rgb(3, 3, 3));
+
+  --c-fg:             #FFFFFF;   /* titulares, texto de botón */
+  --c-fg-body:        #F0F0F0;   /* color de lectura principal */
+  --c-fg-muted:       #A1A4A5;   /* texto apagado, metadatos */
+  --c-fg-faint:       #6E727A;   /* trazos decorativos, deshabilitado */
+  --c-fg-ghost:       #464A4D;   /* texto que debe desaparecer en la superficie */
+
+  /* Violeta de marca. Pertenece al código y a los identificadores de
+     developer — nunca a titulares grandes ni a rellenos de botón. */
+  --c-accent:         #9281F7;
+  --c-accent-bright:  #BAA7FF;
+  --c-accent-deep:    #4A3F8F;
+  --c-accent-ink:     #000000;
+  --grad-accent:      linear-gradient(to right bottom in oklab, #9281F7 0%, #9A54DC 100%);
+
+  --c-accent-a08:     rgba(146, 129, 247, 0.08);
+  --c-accent-a16:     rgba(146, 129, 247, 0.16);
+  --c-accent-a32:     rgba(146, 129, 247, 0.32);
+
+  /* Toda separación de capas se hace con estos hairlines, no con sombras */
+  --c-line:           #292D30;
+  --c-line-strong:    #3F4448;
+  --c-line-bright:    rgba(255, 255, 255, 0.55);
+  --c-line-accent:    var(--c-accent-a32);
+
+  --c-selection-bg:   var(--c-accent);
+  --c-selection-fg:   #FFFFFF;
+
+
+  /* ---------------------------------------------------------------
+     TIPOGRAFÍA
+     Serif editorial solo para el hero. Sans para todo lo demás.
+     Mono para código, etiquetas y cualquier identificador técnico.
+     --------------------------------------------------------------- */
+
+  /* Sustituto libre de Domaine: el más cercano en Google Fonts */
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  /* Sustituto de Inter / ABC Favorit: una sola familia para UI y titulares */
+  --font-body:    'Inter', ui-sans-serif, system-ui, 'Segoe UI', sans-serif;
+  /* Sustituto de Commit Mono */
+  --font-mono:    'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+  --fw-light:     300;
+  --fw-regular:   400;
+  --fw-medium:    500;
+  --fw-semibold:  600;
+  --fw-bold:      700;
+
+  /* Escala fluida ------------------------------------------------ */
+  /* hero serif    40px →  96px */
+  --fs-hero:      clamp(2.5rem,    1.333rem +  5.185vw, 6rem);
+  /* display suelto (contador del preloader) 40px → 88px */
+  --fs-display:   clamp(2.5rem,    1.583rem +  4.074vw, 5.5rem);
+  /* h2 de sección 28px →  56px */
+  --fs-h2:        clamp(1.75rem,   1.167rem +  2.593vw, 3.5rem);
+  /* marquee       24px →  48px */
+  --fs-marquee:   clamp(1.5rem,    1rem     +  2.222vw, 3rem);
+  /* números       22px →  40px */
+  --fs-numeral:   clamp(1.375rem,  1rem     +  1.667vw, 2.5rem);
+  /* h3            18px →  24px */
+  --fs-h3:        clamp(1.125rem,  1rem     +  0.556vw, 1.5rem);
+  /* lead          17px →  20px */
+  --fs-lead:      clamp(1.0625rem, 0.979rem +  0.37vw,  1.25rem);
+  /* cuerpo, fijo — 16px es el tamaño de lectura del sistema */
+  --fs-body:      1rem;
+  --fs-sm:        0.875rem;
+  --fs-label:     0.75rem;
+
+  /* Interlineado -------------------------------------------------- */
+  --lh-display:   1;
+  --lh-heading:   1.2;
+  --lh-tight:     1.4;
+  --lh-body:      1.5;
+  --lh-relaxed:   1.6;
+
+  /* Tracking ------------------------------------------------------ */
+  /* La serif del hero apenas se aprieta: -0.01em */
+  --ls-display:  -0.01em;
+  /* La firma del sistema: -0.05em en la sans a 56px. Ese apretón extremo
+     es lo que hace que un titular geométrico se sienta seguro. */
+  --ls-heading:  -0.05em;
+  --ls-body:      0em;
+  --ls-label:     0.025em;
+  --ls-mono:      0.02em;
+
+
+  /* ---------------------------------------------------------------
+     ESPACIADO — base de 4px
+     --------------------------------------------------------------- */
+
+  --space-3xs:  0.25rem;   /*  4px */
+  --space-2xs:  0.5rem;    /*  8px */
+  --space-xs:   0.75rem;   /* 12px */
+  --space-sm:   1rem;      /* 16px */
+  --space-md:   1.5rem;    /* 24px */
+  --space-lg:   2rem;      /* 32px */
+  --space-xl:   3rem;      /* 48px */
+  --space-2xl:  4rem;      /* 64px */
+  --space-3xl:  6rem;      /* 96px */
+
+  /* Aire entre secciones: 64px → 104px */
+  --space-section: clamp(4rem, 2.667rem + 5.926vw, 6.5rem);
+
+
+  /* ---------------------------------------------------------------
+     LAYOUT
+     --------------------------------------------------------------- */
+
+  --gutter:        clamp(1.25rem, 0.333rem + 4.074vw, 4rem);
+  --container-max: 75rem;    /* 1200px — page max-width del sistema */
+  --measure:       68ch;
+  --grid-cols:     12;
+  --grid-gap:      clamp(1rem, 2.5vw, 2rem);
+  --card-padding:  var(--space-lg);
+
+  --header-h:      4.5rem;
+
+
+  /* ---------------------------------------------------------------
+     BORDES Y RADIOS
+     Solo dos valores: 6px para botones/badges/inputs, 16px para
+     tarjetas y ventanas de código. No se mezclan en una misma pieza.
+     --------------------------------------------------------------- */
+
+  --radius-sm:   6px;    /* botones, badges, inputs */
+  --radius-md:   16px;   /* tarjetas, bloques de código */
+  --radius-lg:   24px;   /* paneles grandes */
+  --radius-pill: 9999px;
+
+  --border-hairline: 1px solid var(--c-line);
+
+  /* La única sombra del sistema: un anillo de 1px que insinúa una fuente
+     de luz. No se usan sombras para dar elevación. */
+  --ring-subtle: rgba(176, 199, 217, 0.145) 0 0 0 1px;
+
+
+  /* ---------------------------------------------------------------
+     MOVIMIENTO
+     --------------------------------------------------------------- */
+
+  --dur-instant: 100ms;
+  --dur-fast:    150ms;   /* los hover del sistema son 150ms ease-out */
+  --dur-base:    260ms;
+  --dur-slow:    520ms;
+  --dur-reveal:  820ms;
+
+  --ease-out:    cubic-bezier(0.165, 0.84, 0.44, 1);   /* ≈ power3.out */
+  --ease-expo:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-back:   cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Consumidos por JS vía getComputedStyle */
+  --lerp-cursor:   0.14;
+  --magnet-radius: 90px;
+  --magnet-pull:   0.28;
+
+
+  /* ---------------------------------------------------------------
+     ATMÓSFERA — la desviación respecto a Resend (ver 08-canvas.css)
+     --------------------------------------------------------------- */
+
+  --grid-size:      88px;   /* paso de la rejilla de fondo */
+  --grid-opacity:   0.62;
+  --grain-opacity:  0.04;
+  --bloom-opacity:  0.55;
+
+
+  /* ---------------------------------------------------------------
+     CAPAS
+     --------------------------------------------------------------- */
+
+  --z-canvas:   -2;
+  --z-grain:    -1;
+  --z-base:      0;
+  --z-media:     10;
+  --z-sticky:    50;
+  --z-header:    100;
+  --z-cursor:    9000;
+  --z-preloader: 9999;
+}
+
+
+/* ==========================================================================
+   MOVIMIENTO REDUCIDO
+   Un solo lugar donde se desactiva el motion. JS lee estos mismos tokens,
+   así que CSS y GSAP nunca quedan desincronizados.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  /* `.motion-forced` lo pone JS con ?motion=force. Sirve para revisar las
+     animaciones en una maquina que tiene "reducir movimiento" activado.
+     Sin ese parametro el usuario real nunca ve movimiento. */
+  :root:not(.motion-forced) {
+    --dur-instant: 1ms;
+    --dur-fast:    1ms;
+    --dur-base:    1ms;
+    --dur-slow:    1ms;
+    --dur-reveal:  1ms;
+
+    --lerp-cursor:   1;
+    --magnet-radius: 0px;
+    --magnet-pull:   0;
+  }
+}

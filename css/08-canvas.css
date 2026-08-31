@@ -1,0 +1,122 @@
+/* ==========================================================================
+   08-CANVAS — el fondo con capas
+
+   Resend prohíbe expresamente esto: "el lienzo es negro plano, sin
+   gradientes ni glows". Aquí se desvía a propósito, pero con disciplina:
+   tres capas muy sutiles en vez de un wash de color.
+
+     1. Rejilla de hairlines, con el mismo gris #292D30 de los bordes.
+        Es la extensión natural del lenguaje del sistema: si todo se
+        separa con líneas de 1px, el fondo también.
+     2. Grano fino. Rompe el bandeado del negro y le da textura mate.
+     3. Un único bloom violeta detrás del hero, no en toda la página.
+
+   Todo va en position: fixed y detrás del contenido, así que no cuesta
+   layout ni repaints al hacer scroll.
+
+   Para volver al negro plano de Resend: quita el <link> de este archivo.
+   ========================================================================== */
+
+/* El fondo real vive en <html>. El <body> se vuelve transparente para que
+   las capas fijas de abajo se vean a través de él. */
+html { background-color: var(--c-bg); }
+body { background-color: transparent; }
+
+
+/* --- Capa 1: rejilla ------------------------------------------------------
+   Se desvanece hacia abajo y hacia los lados con una máscara, así el fondo
+   nunca compite con el contenido: solo insinúa una cuadrícula técnica. */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+
+  background-image:
+    linear-gradient(to right,  var(--c-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--c-line) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  opacity: var(--grid-opacity);
+
+  -webkit-mask-image: radial-gradient(150% 130% at 50% 12%, #000 0%, rgba(0,0,0,0.6) 55%, transparent 88%);
+          mask-image: radial-gradient(150% 130% at 50% 12%, #000 0%, rgba(0,0,0,0.6) 55%, transparent 88%);
+}
+
+
+/* Cuando grid.js monta el canvas, la rejilla de CSS se apaga: son la misma
+   rejilla y no deben dibujarse las dos. */
+.has-canvas-grid body::before { display: none; }
+
+.canvas-grid {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+
+  /* SIN mask-image de CSS a proposito: un elemento fijo a pantalla completa
+     con mascara obliga a recomponer la capa en cada frame. El desvanecido
+     se dibuja dentro del propio canvas (destination-in) en grid.js. */
+}
+
+
+/* --- Capa 2: grano --------------------------------------------------------
+   feTurbulence en un SVG embebido: sin peticiones de red y sin imagen que
+   cargar. Es lo que evita que el negro se vea como un plano digital muerto. */
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+}
+
+
+/* --- Capa 3: bloom del hero -----------------------------------------------
+   Un solo foco violeta, detrás del titular y de nada más. No se repite en
+   el resto de secciones: si estuviera en todas, dejaría de significar algo. */
+
+.hero::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+
+  /* Anclado arriba a la izquierda, donde arranca la lectura */
+  left: calc(var(--gutter) * -1);
+  top: 10%;
+  width: min(52rem, 90vw);
+  aspect-ratio: 1;
+
+  background: radial-gradient(closest-side,
+              rgba(146, 129, 247, 0.16) 0%,
+              rgba(146, 129, 247, 0.05) 45%,
+              transparent 72%);
+  opacity: var(--bloom-opacity);
+}
+
+
+/* --- Superficies elevadas -------------------------------------------------
+   Las tarjetas tampoco son negro plano: llevan el gradiente de superficie
+   del sistema, que es lo único que Resend sí permite para levantar un panel. */
+
+.project {
+  background-image: var(--grad-surface);
+}
+
+
+/* En pantallas muy pequeñas la rejilla estorba más de lo que aporta */
+@media (max-width: 600px) {
+  :root { --grid-size: 56px; --grid-opacity: 0.35; }
+}
+
+/* El grano fijo es lo primero que se nota en un equipo lento */
+@media (prefers-reduced-motion: reduce) {
+  :root:not(.motion-forced) { --grain-opacity: 0.025; }
+}
