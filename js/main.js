@@ -10,6 +10,7 @@
  */
 
 import { initI18n } from './modules/i18n.js';
+import { initMotionToggle } from './modules/motion.js';
 import { initGrid } from './modules/grid.js';
 import { initMagnetic } from './modules/magnetic.js';
 import { initProjects } from './modules/projects.js';
@@ -22,6 +23,7 @@ async function boot() {
   document.documentElement.classList.add('js');
 
   initI18n();
+  initMotionToggle();
   initGrid();
   initMagnetic();
   initProjects();

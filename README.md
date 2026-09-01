@@ -15,17 +15,38 @@ no funcionan sobre `file://`.
 `dev-server.py` es `http.server` con `Cache-Control: no-store`. Sin eso el
 navegador se queda con CSS viejo mientras editas.
 
-### Ver las animaciones con "reducir movimiento" activado
+### Preferencia de movimiento
 
-Si tu sistema tiene activado *reducir movimiento*, el sitio se muestra sin
-animación (que es lo correcto). Para revisarlas de todas formas:
+Hay tres estados, y se guardan en `localStorage` bajo `jms-motion`:
+
+| Valor | Significado |
+|---|---|
+| ausente | sigue al sistema operativo — **por defecto** |
+| `on` | el visitante activó el movimiento a mano |
+| `off` | el visitante lo apagó a mano |
+
+El sistema manda salvo que el visitante diga otra cosa desde el **interruptor
+del footer**. Su decisión pesa más porque es más reciente y más específica: la
+tomó en este sitio.
+
+Eso significa que el sitio **sigue respetando `prefers-reduced-motion` por
+defecto**. El interruptor no lo desactiva: solo permite cambiar de opinión.
+
+Para desarrollo sigue existiendo `?motion=force`, que activa el movimiento sin
+guardar nada:
 
 ```
 http://localhost:5173/?motion=force
 ```
 
-Es solo para desarrollo. Un visitante normal nunca ve movimiento si pidió no
-verlo.
+En CSS se traduce en dos clases sobre `<html>`, que pone `env.js`:
+
+- `.motion-forced` anula el bloque de `prefers-reduced-motion`
+- `.motion-off` lo aplica aunque el sistema no lo pida
+
+Los valores reducidos están **duplicados a propósito** en `02-tokens.css` y
+`01-reset.css`: CSS no permite compartir un bloque entre una media query y una
+clase, y meter una variable intermedia lo volvía ilegible.
 
 ## Estructura
 
@@ -44,11 +65,11 @@ js/
   main.js             Orquestador
   modules/
     i18n.js           Toggle ES/EN
+    motion.js         Interruptor de movimiento del footer
     magnetic.js       Botones magnéticos
     projects.js       Parallax de la imagen del proyecto
     reveals.js        Apariciones al hacer scroll (GSAP + split-type)
     horizontal.js     Carrusel horizontal de proyectos
-    marquee.js        Cinta infinita del stack
   utils/
     env.js            Detección de entorno y lectura de tokens
     raf.js            Un solo requestAnimationFrame para todo el sitio
@@ -258,3 +279,4 @@ en desktop y el reveal al hover funcionan solos.
 - **`prefers-reduced-motion` se controla desde un solo bloque** en
   `02-tokens.css`. JS lee esos mismos tokens, así que CSS y GSAP no se
   desincronizan.
+# Portafolio

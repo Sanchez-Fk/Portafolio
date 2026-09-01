@@ -116,7 +116,3 @@ body::after {
   :root { --grid-size: 56px; --grid-opacity: 0.35; }
 }
 
-/* El grano fijo es lo primero que se nota en un equipo lento */
-@media (prefers-reduced-motion: reduce) {
-  :root:not(.motion-forced) { --grain-opacity: 0.025; }
-}

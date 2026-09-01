@@ -79,3 +79,15 @@ html { scroll-behavior: smooth; }
     scroll-behavior: auto !important;
   }
 }
+
+/* Y lo mismo cuando el visitante lo apaga a mano desde el footer */
+:root.motion-off { scroll-behavior: auto; }
+
+:root.motion-off *,
+:root.motion-off *::before,
+:root.motion-off *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}

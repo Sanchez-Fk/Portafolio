@@ -217,10 +217,16 @@
    así que CSS y GSAP nunca quedan desincronizados.
    ========================================================================== */
 
+/* Los mismos valores en dos situaciones:
+     1. el sistema pide reducir movimiento y el visitante no ha dicho lo contrario
+     2. el visitante lo ha apagado a mano con el interruptor del footer
+   Se repiten a proposito: CSS no permite compartir un bloque entre una
+   media query y una clase, y una variable intermedia lo volveria ilegible. */
+
 @media (prefers-reduced-motion: reduce) {
-  /* `.motion-forced` lo pone JS con ?motion=force. Sirve para revisar las
-     animaciones en una maquina que tiene "reducir movimiento" activado.
-     Sin ese parametro el usuario real nunca ve movimiento. */
+  /* `.motion-forced` la pone env.js cuando el visitante activa el movimiento
+     (o con ?motion=force en desarrollo). Su decision pesa mas que la del
+     sistema porque es mas reciente y la tomo en este sitio. */
   :root:not(.motion-forced) {
     --dur-instant: 1ms;
     --dur-fast:    1ms;
@@ -231,5 +237,21 @@
     --lerp-cursor:   1;
     --magnet-radius: 0px;
     --magnet-pull:   0;
+
+    --grain-opacity: 0.025;
   }
+}
+
+:root.motion-off {
+  --dur-instant: 1ms;
+  --dur-fast:    1ms;
+  --dur-base:    1ms;
+  --dur-slow:    1ms;
+  --dur-reveal:  1ms;
+
+  --lerp-cursor:   1;
+  --magnet-radius: 0px;
+  --magnet-pull:   0;
+
+  --grain-opacity: 0.025;
 }

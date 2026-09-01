@@ -7,6 +7,7 @@
   "a11y.navSocial": "Social links and contact",
   "a11y.langToggle": "Switch language to Spanish",
   "a11y.techList": "Technologies",
+  "a11y.motionToggle": "Turn the site animations on or off",
 
   "preloader.label": "Loading",
 
@@ -87,6 +88,9 @@
 
   "footer.brand": "José Manuel Sánchez — Lumina Dev",
   "footer.email": "Email",
+  "motion.label": "Motion",
+  "motion.on": "On",
+  "motion.off": "Off",
   "footer.phone": "+57 305 262 4583",
   "footer.location": "Medellín, Colombia",
   "footer.rights": "© 2026 · All rights reserved"

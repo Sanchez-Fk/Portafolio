@@ -434,6 +434,19 @@
 
     <p class="site-footer__meta">
       <span data-i18n="footer.location">Medellín, Colombia</span>
+
+      <!-- `hidden` de serie: sin JS no hay nada que pulsar y manda el sistema.
+           motion.js lo revela al arrancar. -->
+      <button type="button" class="motion-toggle" data-motion-toggle hidden
+              aria-pressed="false"
+              data-label-on="Activado" data-label-off="Desactivado"
+              data-i18n-attr="aria-label:a11y.motionToggle, data-label-on:motion.on, data-label-off:motion.off"
+              aria-label="Activar o desactivar las animaciones del sitio">
+        <span class="motion-toggle__dot" aria-hidden="true"></span>
+        <span data-i18n="motion.label">Movimiento</span>
+        <span data-motion-state>Desactivado</span>
+      </button>
+
       <span data-i18n="footer.rights">© 2026 · Todos los derechos reservados</span>
     </p>
   </footer>

@@ -87,6 +87,43 @@
 }
 
 
+/* --- Interruptor de movimiento (footer) ----------------------------------- */
+
+.motion-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-mono);
+  color: var(--c-fg-muted);
+
+  padding: var(--space-3xs) var(--space-2xs);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+
+  transition: color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out);
+}
+.motion-toggle:hover { color: var(--c-fg); border-color: var(--c-line); }
+
+/* El punto es el estado de un vistazo: apagado en gris, encendido en violeta */
+.motion-toggle__dot {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: var(--c-fg-ghost);
+  flex: none;
+  transition: background var(--dur-fast) var(--ease-out);
+}
+.motion-toggle[data-motion-on="true"] .motion-toggle__dot {
+  background: var(--c-accent);
+}
+
+.motion-toggle [data-motion-state] { color: var(--c-fg-body); }
+
+
 /* --- Rejilla del stack ---------------------------------------------------
    Todas las tecnologias a la vez, sin envoltorio de tarjeta: solo las marcas
    respirando sobre el negro, que es como el sistema pide una parrilla de
