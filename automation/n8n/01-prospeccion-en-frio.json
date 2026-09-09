@@ -1,0 +1,611 @@
+{
+  "name": "01 · Prospección en frío",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0,30 9-17 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "cada-media-hora",
+      "name": "Cada media hora",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -620,
+        300
+      ],
+      "notes": "El cron es la primera reja. La segunda es en_horario() en la base, que usa la zona horaria de la tabla ajustes."
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select (select jsonb_object_agg(clave, valor) from ajustes) as cfg,\n       en_horario()        as en_horario,\n       cupo_restante()     as cupo,\n       limite_diario_hoy() as limite,\n       enviados_hoy()      as enviados;",
+        "options": {}
+      },
+      "id": "ajustes-y-cupo",
+      "name": "Ajustes y cupo",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        -400,
+        300
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "prospector-postgres",
+          "name": "Prospector Postgres"
+        }
+      },
+      "notes": "Toda la configuración vive en la base. Para cambiar horario, límites o el pitch no se toca este flujo.",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c14650907",
+              "leftValue": "={{ $json.en_horario }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            },
+            {
+              "id": "c63020962",
+              "leftValue": "={{ $json.cupo }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              },
+              "rightValue": 0
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "puedo-enviar",
+      "name": "¿Puedo enviar?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -180,
+        300
+      ],
+      "notes": "Fuera de horario o sin cupo, la ejecución termina aquí sin hacer nada."
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Marca los leads como 'en_cola' en la misma transacción en que los\n-- devuelve. Con 'skip locked', dos ejecuciones simultáneas jamás\n-- agarran el mismo lead.\nselect * from apartar_lote({{ Number($json.cfg.lote_por_ejecucion) || 5 }}::int);",
+        "options": {}
+      },
+      "id": "apartar-lote",
+      "name": "Apartar lote",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        40,
+        220
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "prospector-postgres",
+          "name": "Prospector Postgres"
+        }
+      },
+      "notes": null,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "uno-por-uno",
+      "name": "Uno por uno",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        260,
+        220
+      ],
+      "notes": "De a uno, con pausa entre cada envío. Mandar 40 mensajes seguidos es la forma más rápida de que baneen el número."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Ajustes y cupo').first().json.cfg.evolution_url }}/chat/whatsappNumbers/{{ $('Ajustes y cupo').first().json.cfg.evolution_instancia }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ numbers: [ $json.telefono ] }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "tiene-whatsapp",
+      "name": "¿Tiene WhatsApp?",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        320
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "evolution-apikey",
+          "name": "Evolution API key"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "notes": "Escribirle a un número sin WhatsApp cuenta como intento fallido y ensucia la reputación de la línea. Mejor descartarlo antes."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c60553903",
+              "leftValue": "={{ $json.exists }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "existe",
+      "name": "¿Existe?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        700,
+        320
+      ],
+      "notes": null
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Literal SQL seguro. Duplicar la comilla simple es lo mismo que hace\n// quote_literal() en Postgres, y con standard_conforming_strings=on (por\n// defecto) no hay ninguna otra secuencia de escape que valga.\nconst lit = (v) => (v === null || v === undefined || v === '')\n  ? 'null'\n  : \"'\" + String(v).replace(/'/g, \"''\") + \"'\";\n\n            const cfg  = $('Ajustes y cupo').first().json.cfg;\n            const lead = $('Uno por uno').first().json;\n\n            // Lo que la IA puede saber del negocio. Nada más.\n            const ficha = {\n              negocio:     lead.negocio,\n              contacto:    lead.nombre,\n              rubro:       lead.rubro,\n              ciudad:      lead.ciudad,\n              sitio_web:   lead.sitio_web || '(no tiene página web)',\n              observacion: lead.observacion,\n              extra:       lead.extra,\n            };\n\n            const peticion = {\n              model: cfg.modelo || 'claude-opus-5',\n              max_tokens: 8000,\n              output_config: {\n                effort: cfg.esfuerzo_apertura || 'low',\n                format: { type: 'json_schema', schema: {\"type\": \"object\", \"properties\": {\"mensaje\": {\"type\": \"string\", \"description\": \"El mensaje tal cual se envía por WhatsApp.\"}, \"gancho\": {\"type\": \"string\", \"description\": \"En 6 palabras, el dato concreto del negocio que usaste.\"}}, \"required\": [\"mensaje\", \"gancho\"], \"additionalProperties\": false} },\n              },\n              system: [{\n                type: 'text',\n                text: cfg.ficha_comercial + String.fromCharCode(10, 10) + cfg.prompt_apertura,\n                // Igual para todos los leads: se cachea y las siguientes llamadas\n                // del día cuestan una fracción.\n                cache_control: { type: 'ephemeral' },\n              }],\n              messages: [{\n                role: 'user',\n                content: 'Escribe el primer mensaje para este negocio:'\n                       + String.fromCharCode(10) + JSON.stringify(ficha, null, 2),\n              }],\n            };\n\n            return [{ json: { peticion, lead_id: lead.id, telefono: lead.telefono } }];"
+      },
+      "id": "armar-apertura",
+      "name": "Armar apertura",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        920,
+        220
+      ],
+      "notes": null
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.peticion) }}",
+        "options": {
+          "timeout": 120000
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "id": "redactar",
+      "name": "Redactar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1140,
+        220
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "anthropic-apikey",
+          "name": "Anthropic API key"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "notes": null
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// WhatsApp no es markdown, y un mensaje en frío con enlaces se va a spam.\nfunction limpiar(txt, maxLargo) {\n  let t = String(txt || '')\n    .replace(/\\*\\*(.+?)\\*\\*/g, '$1')     // **negrita**\n    .replace(/^[-*•]\\s+/gm, '')            // viñetas\n    .replace(/^#{1,6}\\s+/gm, '')           // títulos\n    .replace(/\\[(.+?)\\]\\(.+?\\)/g, '$1')  // [texto](url)\n    .replace(/\\n{3,}/g, '\\n\\n')\n    .replace(/[ \\t]+/g, ' ')\n    .trim();\n  if (t.length > maxLargo) {\n    // Cortar en la última frase completa que quepa, no a mitad de palabra.\n    const corte = t.slice(0, maxLargo);\n    const fin = Math.max(corte.lastIndexOf('. '), corte.lastIndexOf('? '), corte.lastIndexOf('\\n'));\n    t = (fin > maxLargo * 0.5 ? corte.slice(0, fin + 1) : corte).trim();\n  }\n  return t;\n}\n\n// La respuesta puede traer bloques de razonamiento antes del texto.\nfunction textoDelModelo(respuesta) {\n  if (respuesta?.stop_reason === 'refusal') {\n    throw new Error('El modelo declinó la petición. Revisa el prompt en ajustes.');\n  }\n  const bloque = (respuesta?.content || []).find((b) => b.type === 'text' && b.text);\n  if (!bloque) {\n    throw new Error('Respuesta sin texto: ' + JSON.stringify(respuesta).slice(0, 400));\n  }\n  return bloque.text;\n}\n\n\n// Literal SQL seguro. Duplicar la comilla simple es lo mismo que hace\n// quote_literal() en Postgres, y con standard_conforming_strings=on (por\n// defecto) no hay ninguna otra secuencia de escape que valga.\nconst lit = (v) => (v === null || v === undefined || v === '')\n  ? 'null'\n  : \"'\" + String(v).replace(/'/g, \"''\") + \"'\";\n\n            const cfg   = $('Ajustes y cupo').first().json.cfg;\n            const lead  = $('Uno por uno').first().json;\n            const datos = JSON.parse(textoDelModelo($input.first().json));\n\n            let mensaje = limpiar(datos.mensaje, 420);\n\n            // Últimas rejas, por si el modelo se salta el prompt.\n            mensaje = mensaje.replace(/https?:\\/\\/\\S+/g, '').replace(/ {2,}/g, ' ').trim();\n\n            const baja = 'Si no te interesa dime \"baja\" y no te escribo más.';\n            if (!/\\bbaja\\b/i.test(mensaje)) {\n              mensaje += String.fromCharCode(10, 10) + baja;\n            }\n\n            if (mensaje.length < 25) {\n              throw new Error('Mensaje demasiado corto, no se envía: ' + mensaje);\n            }\n\n            return [{ json: {\n              mensaje,\n              mensaje_sql: lit(mensaje),\n              gancho_sql:  lit(datos.gancho || ''),\n              lead_id:     lead.id,\n              telefono:    lead.telefono,\n              delay_ms:    Math.min(60, Math.max(20, mensaje.length / 3)) * 100,\n            } }];"
+      },
+      "id": "revisar-mensaje",
+      "name": "Revisar mensaje",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        220
+      ],
+      "notes": null
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Ajustes y cupo').first().json.cfg.evolution_url }}/message/sendText/{{ $('Ajustes y cupo').first().json.cfg.evolution_instancia }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $json.telefono, text: $json.mensaje, delay: $json.delay_ms, linkPreview: false }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "enviar",
+      "name": "Enviar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1580,
+        220
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "evolution-apikey",
+          "name": "Evolution API key"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "notes": "`delay` hace que Evolution muestre 'escribiendo…' ese tiempo antes de soltar el mensaje."
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- select * from ... (no `(registrar_envio(...)).*`, que la evaluaría\n-- una vez por columna y dispararía el contador de toques).\nselect * from registrar_envio(\n  {{ Number($('Revisar mensaje').first().json.lead_id) }}::bigint,\n  {{ $('Revisar mensaje').first().json.mensaje_sql }},\n  'apertura',\n  {{ $json.key && $json.key.id ? \"'\" + String($json.key.id).replace(/'/g, \"''\") + \"'\" : 'null' }}\n);",
+        "options": {}
+      },
+      "id": "registrar-envio",
+      "name": "Registrar envío",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        1800,
+        140
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "prospector-postgres",
+          "name": "Prospector Postgres"
+        }
+      },
+      "notes": null,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "amount": "={{ (() => { const c = $('Ajustes y cupo').first().json.cfg; const min = Number(c.pausa_min_seg) || 75; const max = Number(c.pausa_max_seg) || 210; return Math.floor(min + Math.random() * (max - min)); })() }}",
+        "unit": "seconds"
+      },
+      "id": "pausa-humana",
+      "name": "Pausa humana",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2020,
+        140
+      ],
+      "notes": "Intervalo aleatorio, no fijo. Un patrón regular es justo lo que detectan los sistemas antiabuso.",
+      "webhookId": "wait-1870277982"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from marcar_estado({{ Number($('Uno por uno').first().json.id) }}::bigint,\n                            'invalido'::lead_estado, null, 'el número no tiene WhatsApp');",
+        "options": {}
+      },
+      "id": "marcar-sin-whatsapp",
+      "name": "Marcar sin WhatsApp",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        920,
+        420
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "prospector-postgres",
+          "name": "Prospector Postgres"
+        }
+      },
+      "notes": null,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- El envío falló por algo transitorio. Lo soltamos para que el\n-- siguiente disparo lo reintente en vez de dejarlo trabado en 'en_cola'.\nselect soltar_lead({{ Number($('Uno por uno').first().json.id) }}::bigint);",
+        "options": {}
+      },
+      "id": "devolver-a-la-cola",
+      "name": "Devolver a la cola",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        1800,
+        400
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "prospector-postgres",
+          "name": "Prospector Postgres"
+        }
+      },
+      "notes": null,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "id": "listo",
+      "name": "Listo",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        480,
+        120
+      ]
+    }
+  ],
+  "connections": {
+    "Cada media hora": {
+      "main": [
+        [
+          {
+            "node": "Ajustes y cupo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ajustes y cupo": {
+      "main": [
+        [
+          {
+            "node": "¿Puedo enviar?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Puedo enviar?": {
+      "main": [
+        [
+          {
+            "node": "Apartar lote",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apartar lote": {
+      "main": [
+        [
+          {
+            "node": "Uno por uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Uno por uno": {
+      "main": [
+        [
+          {
+            "node": "Listo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "¿Tiene WhatsApp?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Tiene WhatsApp?": {
+      "main": [
+        [
+          {
+            "node": "¿Existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Existe?": {
+      "main": [
+        [
+          {
+            "node": "Armar apertura",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Marcar sin WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marcar sin WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Uno por uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar apertura": {
+      "main": [
+        [
+          {
+            "node": "Redactar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redactar": {
+      "main": [
+        [
+          {
+            "node": "Revisar mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Devolver a la cola",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Revisar mensaje": {
+      "main": [
+        [
+          {
+            "node": "Enviar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar": {
+      "main": [
+        [
+          {
+            "node": "Registrar envío",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Devolver a la cola",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar envío": {
+      "main": [
+        [
+          {
+            "node": "Pausa humana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pausa humana": {
+      "main": [
+        [
+          {
+            "node": "Uno por uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Devolver a la cola": {
+      "main": [
+        [
+          {
+            "node": "Uno por uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "",
+    "timezone": "America/Bogota"
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "prospector"
+    },
+    {
+      "name": "salida"
+    }
+  ]
+}

@@ -23,3 +23,9 @@ tmp/
 # Claude Code: la config del servidor local SÍ se versiona (.claude/launch.json),
 # pero los ajustes personales de cada máquina no.
 .claude/settings.local.json
+
+# Automatización de WhatsApp (automation/): secretos y datos de leads
+automation/.env
+automation/datos/
+automation/**/leads-*.csv
+!automation/scripts/leads-ejemplo.csv

@@ -76,7 +76,17 @@ js/
 i18n/en.json          SOLO inglés (ver abajo)
 tokens.html           Referencia visual del sistema. No es parte del sitio.
 dev-server.py         Servidor estático sin caché
+automation/           Prospección por WhatsApp con n8n. Ver automation/README.md
 ```
+
+## Automatización de prospección
+
+`automation/` es un proyecto aparte, sin relación con el sitio: el stack de
+n8n + Evolution API + Postgres que lee la base de posibles clientes, les
+escribe en frío por WhatsApp y sostiene la conversación hasta la llamada.
+
+No se despliega con el portafolio y no comparte código con él. Instrucciones
+completas en [automation/README.md](automation/README.md).
 
 ## Sistema de diseño
 
