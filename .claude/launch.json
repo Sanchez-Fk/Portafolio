@@ -6,12 +6,6 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["dev-server.py", "5173"],
       "port": 5173
-    },
-    {
-      "name": "createwebs",
-      "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8765", "--bind", "127.0.0.1", "--directory", "C:/Users/jose0/Downloads/createWebs"],
-      "port": 8765
     }
   ]
 }
