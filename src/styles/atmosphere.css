@@ -1,0 +1,169 @@
+/* ==========================================================================
+   ATMOSPHERE — fondo Nocturne y la intro del editor
+
+   Un solo resplandor violeta arriba a la derecha del hero; el resto de la
+   página es tinta plana. La intro es un editor a pantalla completa que escribe
+   jose.ts y espera a que el visitante pulse Enter.
+   ========================================================================== */
+
+/* El resplandor ocupa todo el ancho de la ventana aunque el hero viva en el
+   contenedor de 1200px, y se apaga antes de la sección siguiente. */
+.hero::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 auto 0 50%;
+  width: 100vw;
+  translate: -50% 0;
+  pointer-events: none;
+  background: radial-gradient(90% 70% at 85% 0%, var(--c-accent-glow), transparent 65%);
+}
+
+
+/* --- Intro ------------------------------------------------------------------ */
+
+.intro-lock,
+.intro-lock body { overflow: hidden; }
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-preloader);
+  display: flex;
+  flex-direction: column;
+  background: var(--c-editor);
+  font-family: var(--font-mono);
+  font-feature-settings: "liga" 0;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 1s cubic-bezier(0.7, 0, 0.2, 1);
+}
+.intro[data-leaving] { clip-path: inset(0 0 100% 0); pointer-events: none; }
+
+.intro[data-calm] { transition: opacity 0.4s ease; }
+.intro[data-calm][data-leaving] { clip-path: inset(0 0 0 0); opacity: 0; }
+
+.intro__tabs {
+  display: flex;
+  flex: none;
+  padding-top: env(safe-area-inset-top);
+  font-size: var(--fs-label);
+  border-bottom: 1px solid var(--c-line);
+}
+.intro__tab {
+  padding: 0.6rem var(--space-sm);
+  color: var(--c-fg-faint);
+}
+.intro__tab.is-active {
+  color: var(--c-fg);
+  border-bottom: 1px solid var(--c-accent-deep);
+  margin-bottom: -1px;
+}
+
+/* 15px a 17px: se lee desde el fondo del sofá, pero cabe en un teléfono */
+.intro__code {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: clamp(1.5rem, 8vh, 4.5rem) clamp(0.5rem, 5vw, 4.5rem) var(--space-lg) 0;
+  font-size: clamp(0.8125rem, 0.72rem + 0.45vw, 1.0625rem);
+  line-height: 1.95;
+}
+.intro__line {
+  display: grid;
+  grid-template-columns: clamp(2.5rem, 2rem + 3vw, 4.5rem) minmax(0, 1fr);
+}
+.intro__ln {
+  padding-right: clamp(0.75rem, 0.5rem + 1vw, 1.5rem);
+  text-align: right;
+  color: var(--c-fg-ghost);
+  font-variant-numeric: tabular-nums;
+}
+/* En pantallas estrechas las listas largas pasan de renglón en vez de cortarse */
+.intro__src { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.tok-c { color: var(--c-fg-faint); }
+.tok-k { color: var(--c-accent); }
+.tok-p { color: var(--c-fg); }
+.tok-y { color: var(--c-accent-bright); }
+.tok-s { color: var(--c-fg-body); }
+
+.intro__caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.15em;
+  vertical-align: -0.2em;
+  background: var(--c-accent-deep);
+  animation: caret-blink 1s steps(1) infinite;
+}
+@keyframes caret-blink { 50% { opacity: 0; } }
+
+.intro__status {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2xs) var(--space-sm);
+  padding: var(--space-2xs) var(--space-sm);
+  padding-bottom: max(var(--space-2xs), env(safe-area-inset-bottom));
+  font-size: var(--fs-label);
+  color: var(--c-fg-faint);
+  background: var(--c-bg-deep);
+  border-top: 1px solid var(--c-line);
+}
+.intro__mode {
+  padding: 0.05rem 0.5rem;
+  border-radius: var(--radius-sm);
+  color: #F5F4FF;
+  background: var(--c-accent-chip);
+}
+.intro__mode[data-ready] { background: var(--c-line-strong); }
+.intro__cmd { color: var(--c-fg-quiet); }
+
+.intro__hint {
+  margin-left: auto;
+  color: var(--c-fg-muted);
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+.intro__hint[data-ready] { opacity: 1; }
+.intro__hint-touch { display: none; }
+@media (hover: none) {
+  .intro__hint-key { display: none; }
+  .intro__hint-touch { display: inline; }
+}
+
+/* Mientras se escribe el botón se apaga, pero sigue respondiendo: completa
+   el archivo de golpe. */
+.intro__enter {
+  font-family: var(--font-mono);
+  opacity: 0.35;
+  transition: opacity var(--dur-slow) var(--ease-out),
+              background var(--dur-fast) var(--ease-out);
+}
+.intro__enter[data-ready] { opacity: 1; }
+
+@media (max-width: 599px) {
+  .intro__cmd { display: none; }
+  .intro__hint { margin-left: 0; flex-basis: 100%; order: 3; }
+  .intro__enter { margin-left: auto; }
+}
+
+
+/* --- Señal de estado -------------------------------------------------------- */
+
+.pulse-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-accent-deep);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot { 50% { opacity: 0.35; } }
+
+:root.motion-off .pulse-dot,
+:root.motion-off .intro__caret { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  :root:not(.motion-forced) .pulse-dot,
+  :root:not(.motion-forced) .intro__caret { animation: none; }
+}

@@ -1,0 +1,226 @@
+/* ==========================================================================
+   TOKENS — sistema de diseño de José Manuel Sánchez Marín
+
+   Color, radios y elevación salen de Nocturne, el sistema del diseño de
+   Claude Design (terminal / editor). Se mantienen de la versión anterior el
+   espaciado, la escala fluida y las curvas. El violeta va en código, enlaces
+   y señales de estado; la atmósfera es un solo resplandor, nunca en texto.
+
+   Los valores fluidos usan interpolación real entre 360px y 1440px:
+     clamp(min, intercepto + pendiente*100vw, max)
+   ========================================================================== */
+
+:root {
+
+  /* ---------------------------------------------------------------
+     COLOR — Nocturne
+     Neutros azul tinta y un acento violeta (hue OKLCH 289). Las rampas
+     vienen del sistema Nocturne de Claude Design; aquí solo se nombran
+     por su papel. --c-accent es el violeta seguro para texto; los pasos
+     900/800 son fondos, nunca texto.
+     --------------------------------------------------------------- */
+
+  --c-bg:             #10111B;   /* fondo de página */
+  --c-bg-deep:        #0F1019;   /* intro y barras de estado */
+  --c-editor:         #12131E;   /* superficie del editor */
+  --c-surface:        #161826;   /* paneles */
+  --c-surface-hover:  #1D1F2B;
+  --grad-surface:     linear-gradient(165deg, rgba(145, 132, 217, 0.08), rgba(22, 24, 38, 0.9) 45%);
+
+  --c-fg:             #E9E9ED;   /* titulares */
+  --c-fg-body:        #CFD3E5;   /* lectura (neutral-300) */
+  --c-fg-muted:       #B2B6CA;   /* metadatos (neutral-400) */
+  --c-fg-quiet:       #9397AB;   /* segundo renglón del nombre (neutral-500) */
+  --c-fg-faint:       #75798C;   /* solo decorativo (neutral-600) */
+  --c-fg-ghost:       #595D6C;   /* números de línea (neutral-700) */
+
+  --c-accent:         #B5ABFC;   /* accent-400 */
+  --c-accent-bright:  #D2CEFD;   /* accent-300: enlaces y claves */
+  --c-accent-deep:    #9184D9;   /* el acento base: barras, puntos, cursor */
+  --c-accent-ink:     #10111B;
+  --c-accent-chip:    #423A6A;   /* accent-800: fondo de etiquetas */
+  --c-accent-glow:    #2B2741;   /* accent-900: atmósfera */
+  --c-accent-a16:     rgba(145, 132, 217, 0.12);
+
+  --c-line:           #292B31;   /* neutral-900 */
+  --c-line-strong:    #3F424D;   /* neutral-800 */
+  --c-line-bright:    #595D6C;
+  --c-divider:        rgba(233, 233, 237, 0.16);
+
+  --c-selection-bg:   rgba(145, 132, 217, 0.3);
+  --c-selection-fg:   #FFFFFF;
+
+
+  /* ---------------------------------------------------------------
+     TIPOGRAFÍA
+     Inter para todo, también el hero. Mono para código, etiquetas y
+     cualquier identificador técnico.
+     --------------------------------------------------------------- */
+
+  --font-display: 'Inter', ui-sans-serif, system-ui, 'Segoe UI', sans-serif;
+  /* Sustituto de Inter / ABC Favorit: una sola familia para UI y titulares */
+  --font-body:    'Inter', ui-sans-serif, system-ui, 'Segoe UI', sans-serif;
+  /* Sustituto de Commit Mono */
+  --font-mono:    'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+  --fw-light:     300;
+  --fw-regular:   400;
+  --fw-medium:    500;
+  --fw-semibold:  600;
+  --fw-bold:      700;
+
+  /* Escala fluida ------------------------------------------------ */
+  /* nombre del hero 48px → 112px */
+  --fs-hero:      clamp(3rem,      1.667rem +  5.926vw, 7rem);
+  /* h2 de sección 28px →  56px */
+  --fs-h2:        clamp(1.75rem,   1.167rem +  2.593vw, 3.5rem);
+  /* números       22px →  40px */
+  --fs-numeral:   clamp(1.375rem,  1rem     +  1.667vw, 2.5rem);
+  /* h3            18px →  24px */
+  --fs-h3:        clamp(1.125rem,  1rem     +  0.556vw, 1.5rem);
+  /* lead          17px →  20px */
+  --fs-lead:      clamp(1.0625rem, 0.979rem +  0.37vw,  1.25rem);
+  /* cuerpo, fijo — 16px es el tamaño de lectura del sistema */
+  --fs-body:      1rem;
+  --fs-sm:        0.875rem;
+  --fs-label:     0.75rem;
+
+  /* Interlineado -------------------------------------------------- */
+  --lh-display:   1;
+  --lh-heading:   1.2;
+  --lh-tight:     1.4;
+  --lh-body:      1.5;
+  --lh-relaxed:   1.6;
+
+  /* Tracking ------------------------------------------------------ */
+  /* El nombre del hero, enorme, se aprieta todavía más que los titulares */
+  --ls-display:  -0.055em;
+  /* La firma del sistema: -0.05em en la sans a 56px. Ese apretón extremo
+     es lo que hace que un titular geométrico se sienta seguro. */
+  --ls-heading:  -0.05em;
+  --ls-body:      0em;
+  --ls-label:     0.025em;
+  --ls-mono:      0.02em;
+
+
+  /* ---------------------------------------------------------------
+     ESPACIADO — base de 4px
+     --------------------------------------------------------------- */
+
+  --space-3xs:  0.25rem;   /*  4px */
+  --space-2xs:  0.5rem;    /*  8px */
+  --space-xs:   0.75rem;   /* 12px */
+  --space-sm:   1rem;      /* 16px */
+  --space-md:   1.5rem;    /* 24px */
+  --space-lg:   2rem;      /* 32px */
+  --space-xl:   3rem;      /* 48px */
+  --space-2xl:  4rem;      /* 64px */
+  --space-3xl:  6rem;      /* 96px */
+
+  /* Aire entre secciones: 64px → 104px */
+  --space-section: clamp(4rem, 2.667rem + 5.926vw, 6.5rem);
+
+
+  /* ---------------------------------------------------------------
+     LAYOUT
+     --------------------------------------------------------------- */
+
+  --gutter:        clamp(1.25rem, 0.333rem + 4.074vw, 4rem);
+  --container-max: 75rem;    /* 1200px — page max-width del sistema */
+  --measure:       68ch;
+  --grid-cols:     12;
+  --grid-gap:      clamp(1rem, 2.5vw, 2rem);
+  --card-padding:  var(--space-lg);
+
+  --header-h:      4.5rem;
+
+
+  /* ---------------------------------------------------------------
+     BORDES Y RADIOS
+     Los de Nocturne: 4px para chips, 8px para botones y tarjetas,
+     14px para paneles. No se mezclan en una misma pieza.
+     --------------------------------------------------------------- */
+
+  --radius-sm:   4px;    /* badges, segmentos */
+  --radius-md:   8px;    /* botones, tarjetas */
+  --radius-lg:   14px;   /* paneles grandes */
+  --radius-pill: 9999px;
+
+  --border-hairline: 1px solid var(--c-line);
+
+  /* Elevación de Nocturne en fondo oscuro: un filo de 1px más oscuridad
+     ambiente. --ring-subtle es el filo solo. */
+  --ring-subtle: 0 0 0 1px var(--c-line-strong);
+  --shadow-md:   0 0 0 1px var(--c-line-bright), 0 6px 18px rgba(0, 0, 0, 0.55);
+
+
+  /* ---------------------------------------------------------------
+     MOVIMIENTO
+     --------------------------------------------------------------- */
+
+  --dur-instant: 100ms;
+  --dur-fast:    150ms;   /* los hover del sistema son 150ms ease-out */
+  --dur-base:    260ms;
+  --dur-slow:    520ms;
+  --dur-reveal:  820ms;
+
+  --ease-out:    cubic-bezier(0.165, 0.84, 0.44, 1);   /* ≈ power3.out */
+  --ease-expo:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-back:   cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Consumidos por JS vía getComputedStyle */
+  --magnet-radius: 90px;
+  --magnet-pull:   0.28;
+
+
+  /* ---------------------------------------------------------------
+     CAPAS
+     --------------------------------------------------------------- */
+
+  --z-canvas:   -2;
+  --z-base:      0;
+  --z-sticky:    50;
+  --z-header:    100;
+  --z-preloader: 9999;
+}
+
+
+/* ==========================================================================
+   MOVIMIENTO REDUCIDO
+   Un solo lugar donde se desactiva el motion. JS lee estos mismos tokens,
+   así que CSS y GSAP nunca quedan desincronizados.
+   ========================================================================== */
+
+/* Los mismos valores en dos situaciones:
+     1. el sistema pide reducir movimiento y el visitante no ha dicho lo contrario
+     2. el visitante lo ha apagado a mano con el interruptor del footer
+   Se repiten a proposito: CSS no permite compartir un bloque entre una
+   media query y una clase, y una variable intermedia lo volveria ilegible. */
+
+@media (prefers-reduced-motion: reduce) {
+  /* `.motion-forced` la pone env.js cuando el visitante activa el movimiento
+     (o con ?motion=force en desarrollo). Su decision pesa mas que la del
+     sistema porque es mas reciente y la tomo en este sitio. */
+  :root:not(.motion-forced) {
+    --dur-instant: 1ms;
+    --dur-fast:    1ms;
+    --dur-base:    1ms;
+    --dur-slow:    1ms;
+    --dur-reveal:  1ms;
+
+    --magnet-radius: 0px;
+    --magnet-pull:   0;
+  }
+}
+
+:root.motion-off {
+  --dur-instant: 1ms;
+  --dur-fast:    1ms;
+  --dur-base:    1ms;
+  --dur-slow:    1ms;
+  --dur-reveal:  1ms;
+
+  --magnet-radius: 0px;
+  --magnet-pull:   0;
+}

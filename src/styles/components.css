@@ -1,0 +1,235 @@
+/* ==========================================================================
+   COMPONENTS — piezas reutilizables
+   ========================================================================== */
+
+/* --- Botones ---------------------------------------------------------------
+   Nunca llevan relleno de color: transparente, borde de 1px. El primario
+   toma el violeta en borde y texto, como en Nocturne. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* 44px: objetivo táctil cómodo */
+  min-height: 2.75rem;
+  padding: var(--space-xs) var(--space-sm);
+
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  line-height: 1;
+  text-align: center;
+
+  background: transparent;
+  border: 1px solid var(--c-divider);
+  border-radius: var(--radius-md);
+  color: var(--c-fg);
+
+  transition: border-color var(--dur-fast) var(--ease-out),
+              background var(--dur-fast) var(--ease-out);
+}
+.btn--primary { color: var(--c-accent); border-color: var(--c-accent-deep); }
+.btn:hover { background: rgba(233, 233, 237, 0.07); }
+.btn--primary:hover { background: var(--c-accent-a16); }
+.btn--primary:active { background: rgba(145, 132, 217, 0.22); }
+
+
+/* --- Controles del header -------------------------------------------------- */
+
+.lang-toggle,
+.mobile-menu__button,
+.mobile-menu__close {
+  min-height: 2.75rem;
+  padding-inline: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-mono);
+  color: var(--c-fg-muted);
+  border: 1px solid var(--c-line-strong);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out);
+}
+.lang-toggle:hover,
+.mobile-menu__button:hover,
+.mobile-menu__close:hover { color: var(--c-fg); border-color: var(--c-accent-bright); }
+
+/* Selector segmentado: el idioma activo lleva fondo, el otro queda apagado */
+.lang-toggle { display: inline-flex; align-items: center; gap: 2px; padding-inline: 3px; }
+.lang-toggle span { padding: 0.2rem 0.5rem; border-radius: 3px; color: var(--c-fg-faint); }
+.lang-toggle .is-active { color: var(--c-fg); background: var(--c-line-strong); }
+
+.site-nav a {
+  position: relative;
+  display: inline-block;
+  padding-block: var(--space-2xs);
+  color: var(--c-fg-body);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.site-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0.2em;
+  width: 100%;
+  height: 1px;
+  background: var(--c-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.site-nav a:hover { color: var(--c-fg); }
+.site-nav a:hover::after { transform: scaleX(1); }
+
+
+/* --- Menú móvil ------------------------------------------------------------ */
+
+.mobile-menu__panel {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-preloader);
+  overflow-y: auto;
+  padding: var(--space-md) var(--gutter) var(--space-xl);
+  background: var(--c-bg);
+  display: grid;
+  align-content: start;
+  gap: var(--space-xl);
+}
+.mobile-menu__panel[hidden] { display: none; }
+
+.mobile-menu__close { justify-self: end; }
+
+.mobile-menu__panel ul { display: grid; gap: var(--space-2xs); }
+.mobile-menu__panel li a {
+  display: block;
+  padding-block: var(--space-xs);
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-medium);
+  letter-spacing: -0.035em;
+  line-height: var(--lh-heading);
+  color: var(--c-fg);
+  border-bottom: 1px solid var(--c-line);
+}
+
+body.menu-open { overflow: hidden; }
+
+/* Con el menú de escritorio a la vista, el botón móvil sobra */
+@media (min-width: 900px) {
+  .mobile-menu { display: none; }
+}
+
+
+/* --- Indicador de viaje ----------------------------------------------------
+   Solo donde hay margen lateral fuera del contenedor. */
+
+.journey { display: none; }
+
+@media (min-width: 1360px) {
+  .journey {
+    display: block;
+    position: fixed;
+    z-index: var(--z-sticky);
+    right: var(--space-md);
+    top: 50%;
+    translate: 0 -50%;
+    --journey: 0;
+  }
+  .journey ul {
+    position: relative;
+    display: grid;
+    gap: var(--space-2xs);
+    justify-items: end;
+  }
+  /* La línea atraviesa los puntos; el relleno es el avance real del scroll */
+  .journey ul::before,
+  .journey ul::after {
+    content: "";
+    position: absolute;
+    right: 21px;
+    top: 22px;
+    bottom: 22px;
+    width: 1px;
+    background: var(--c-line-strong);
+  }
+  .journey ul::after {
+    background: var(--c-accent);
+    transform: scaleY(var(--journey));
+    transform-origin: top;
+  }
+  .journey a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-xs);
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+    padding-right: 17px;
+  }
+  .journey__dot {
+    position: relative;
+    z-index: 1;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--c-bg);
+    border: 1px solid var(--c-line-bright);
+    transition: background var(--dur-base) var(--ease-out),
+                border-color var(--dur-base) var(--ease-out);
+  }
+  .journey__label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-mono);
+    color: var(--c-fg-muted);
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-out);
+  }
+  .journey a[aria-current] .journey__dot {
+    background: var(--c-accent);
+    border-color: var(--c-accent);
+  }
+  .journey a[aria-current] .journey__label,
+  .journey a:hover .journey__label,
+  .journey a:focus-visible .journey__label { opacity: 1; }
+  .journey a[aria-current] .journey__label { color: var(--c-fg); }
+}
+
+
+/* --- Interruptor de movimiento --------------------------------------------- */
+
+.motion-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  min-height: 2.75rem;
+  padding-inline: var(--space-2xs);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-mono);
+  color: var(--c-fg-muted);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  transition: color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out);
+}
+.motion-toggle:hover { color: var(--c-fg); border-color: var(--c-line-strong); }
+
+.motion-toggle__dot {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: var(--c-fg-faint);
+  flex: none;
+}
+.motion-toggle[data-motion-on="true"] .motion-toggle__dot { background: var(--c-accent); }
+.motion-toggle__state { color: var(--c-fg-body); }
+.motion-toggle:disabled { opacity: 0.5; cursor: default; }
+.motion-toggle:disabled:hover { color: var(--c-fg-muted); border-color: transparent; }
+
+.intro-controls { display: inline-flex; flex-wrap: wrap; gap: var(--space-3xs); }
+
+
+/* --- Máscara de líneas de SplitText ---------------------------------------- */
+
+.reveal-word { will-change: transform; }

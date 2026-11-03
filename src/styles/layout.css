@@ -1,0 +1,192 @@
+/* ==========================================================================
+   LAYOUT — contenedores y ritmo vertical. Mobile-first: 768 / 1024 / 1280
+   ========================================================================== */
+
+main > section,
+.site-footer {
+  padding-inline: var(--gutter);
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
+main > section {
+  position: relative;
+  padding-block: var(--space-section);
+  /* El header flota encima: sin esto las anclas dejan el título debajo */
+  scroll-margin-top: var(--header-h);
+}
+
+.section__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-medium);
+  letter-spacing: -0.035em;
+  line-height: var(--lh-heading);
+  color: var(--c-fg);
+}
+
+.section__lead {
+  font-size: var(--fs-lead);
+  line-height: var(--lh-tight);
+  color: var(--c-fg-muted);
+  margin-top: var(--space-md);
+  max-width: 54ch;
+}
+
+
+/* --- Header --------------------------------------------------------------- */
+
+.site-header {
+  position: fixed;
+  top: 0;
+  inset-inline: 0;
+  z-index: var(--z-header);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+
+  min-height: var(--header-h);
+  padding-inline: var(--gutter);
+
+  /* Velo fijo, sin blur: `backdrop-filter` a pantalla ancha es caro en móvil */
+  background: linear-gradient(to bottom, rgba(16, 17, 27, 0.92), rgba(16, 17, 27, 0));
+}
+
+.site-header__brand {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-mono);
+  color: var(--c-accent-bright);
+  min-width: 0;
+  padding-block: var(--space-2xs);
+}
+
+.site-header__tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex: none;
+}
+
+.site-nav { display: none; }
+
+@media (min-width: 900px) {
+  .site-nav { display: block; }
+  .site-nav ul {
+    display: flex;
+    gap: var(--space-lg);
+    font-size: var(--fs-sm);
+  }
+}
+
+/* --- Hero ------------------------------------------------------------------ */
+
+.hero {
+  isolation: isolate;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+  row-gap: var(--space-md);
+  padding-block: calc(var(--header-h) + var(--space-xl)) var(--space-xl);
+}
+.hero__title { margin-bottom: var(--space-xs); }
+
+/* El resplandor vive fuera del contenedor de 1200px sin que aparezca scroll lateral */
+#contenido { overflow-x: clip; }
+
+@media (min-width: 768px) {
+  .hero { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-md); }
+  .hero__kicker, .hero__title, .hero__body { grid-column: 1 / -1; }
+}
+
+@media (min-width: 1100px) {
+  .hero { grid-template-columns: minmax(0, 1fr) 20rem 20rem; column-gap: var(--space-lg); }
+  .hero__body { grid-column: 1; }
+}
+
+
+/* --- Sobre mí -------------------------------------------------------------- */
+
+.about__grid {
+  margin-top: var(--space-xl);
+  display: grid;
+  gap: var(--space-xl);
+}
+.about__body { display: grid; gap: var(--space-md); align-content: start; }
+
+@media (min-width: 900px) {
+  .about__grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: var(--space-2xl);
+  }
+}
+
+
+/* --- Proyectos ------------------------------------------------------------- */
+
+.work__list {
+  margin-top: var(--space-xl);
+  display: grid;
+  gap: var(--grid-gap);
+}
+.work__item { display: grid; }
+
+@media (min-width: 768px) {
+  .work__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+
+/* --- Habilidades ----------------------------------------------------------- */
+
+.skills__groups {
+  margin-top: var(--space-xl);
+  display: grid;
+  gap: var(--space-xl) var(--space-2xl);
+}
+
+@media (min-width: 768px) {
+  .skills__groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .skills__groups { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+
+/* --- Contacto -------------------------------------------------------------- */
+
+.cta__paths {
+  margin-top: var(--space-xl);
+  display: grid;
+  gap: var(--grid-gap);
+}
+
+@media (min-width: 900px) {
+  .cta__paths { grid-template-columns: 1fr 1fr; }
+}
+
+
+/* --- Footer ---------------------------------------------------------------- */
+
+.site-footer {
+  padding-block: var(--space-2xl);
+  border-top: 1px solid var(--c-line);
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.site-footer__navs {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+@media (min-width: 768px) {
+  .site-footer {
+    grid-template-columns: 1fr auto;
+    column-gap: var(--space-2xl);
+  }
+  .site-footer__meta { grid-column: 1 / -1; }
+}

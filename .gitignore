@@ -1,3 +1,8 @@
+# Dependencias y compilación
+node_modules/
+dist/
+dist-ssr/
+
 # Sistema operativo
 Thumbs.db
 ehthumbs.db
@@ -23,3 +28,6 @@ tmp/
 # Claude Code: la config del servidor local SÍ se versiona (.claude/launch.json),
 # pero los ajustes personales de cada máquina no.
 .claude/settings.local.json
+
+# Capturas de las pruebas con Playwright
+.playwright-mcp/

@@ -1,0 +1,110 @@
+/* ==========================================================================
+   03-BASE — elementos desnudos con los tokens aplicados
+   ========================================================================== */
+
+html {
+  background: var(--c-bg);
+  /* Reserva el espacio de la barra para que el layout no salte */
+  scrollbar-gutter: stable;
+}
+
+body {
+  background: transparent;
+  color: var(--c-fg-body);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-body);
+  letter-spacing: var(--ls-body);
+  overflow-x: hidden;
+}
+
+/* --- Titulares ----------------------------------------------------------- */
+
+/* Los titulares de seccion son sans en peso normal con tracking muy
+   negativo. Ese apreton, no la negrita, es lo que les da presencia. */
+h1, h2, h3 {
+  color: var(--c-fg);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--ls-heading);
+}
+
+h3 {
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-tight);
+  letter-spacing: -0.02em;
+}
+
+p { max-width: var(--measure); }
+
+
+/* --- Enlaces ------------------------------------------------------------- */
+
+a { color: inherit; }
+
+
+/* --- Accesibilidad ------------------------------------------------------- */
+
+::selection {
+  background: var(--c-selection-bg);
+  color: var(--c-selection-fg);
+}
+
+/* Etiqueta monoespaciada: cualquier metadato tecnico del sitio */
+.project__type,
+.project__stack li,
+.about__fact dt,
+.site-footer__meta,
+.hero__scroll-hint,
+.lang-toggle {
+  font-feature-settings: "liga" 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-accent-bright);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* Quita el foco de ratón pero conserva el de teclado */
+:focus:not(:focus-visible) { outline: none; }
+
+.skip-link {
+  font-family: var(--font-mono);
+  position: absolute;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  z-index: var(--z-preloader);
+  padding: var(--space-xs) var(--space-md);
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  border-radius: var(--radius-sm);
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: translateY(0); }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+
+/* --- Barra de scroll ----------------------------------------------------- */
+
+* { scrollbar-color: var(--c-line-strong) var(--c-bg); scrollbar-width: thin; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--c-bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--c-line-strong);
+  border: 3px solid var(--c-bg);
+  border-radius: var(--radius-pill);
+}
