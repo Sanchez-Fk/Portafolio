@@ -10,7 +10,7 @@
  *
  * La intro se reproduce sola solo en la primera visita de la sesión, sin enlace
  * directo (#seccion) y si el visitante no la apagó. Con movimiento reducido
- * también sale, pero en calma: el código aparece entero, sin escribirse.
+ * también sale: el código se escribe igual y solo la salida es en calma.
  * Las mismas reglas están copiadas en el script de index.html, que tapa la
  * página antes de pintar para que el hero no asome un instante.
  */

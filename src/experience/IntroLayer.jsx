@@ -7,8 +7,8 @@
  * el archivo de golpe; el siguiente abre el portafolio.
  *
  * Al entrar, el editor se recoge hacia arriba y el nombre del hero sube desde
- * su máscara. Con movimiento reducido el código aparece entero, el editor se
- * funde y el hero ya está en su sitio.
+ * su máscara. Con movimiento reducido el código se escribe igual (no desplaza
+ * nada en pantalla), pero el editor se funde y el hero ya está en su sitio.
  *
  * Diseño: Claude Design, ronda 2, variantes 2b (editor) y 2c (hero).
  */
@@ -104,7 +104,7 @@ function IntroEditor({ onExited }) {
   const source = useSource();
   const calm = useMemo(() => !motionEnabled(), []);
   const total = useMemo(() => totalUnits(source), [source]);
-  const [units, setUnits] = useState(calm ? total : 0);
+  const [units, setUnits] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const rootRef = useRef(null);
   const buttonRef = useRef(null);
@@ -142,7 +142,7 @@ function IntroEditor({ onExited }) {
 
   /* --- Escritura: un reloj, pausado si la pestaña se oculta --------------- */
   useEffect(() => {
-    if (calm || unitsRef.current >= total) return undefined;
+    if (unitsRef.current >= total) return undefined;
     let elapsed = unitsRef.current * MS_PER_CHAR;
     let last = performance.now();
     const stop = onTick((_, now) => {
@@ -158,7 +158,7 @@ function IntroEditor({ onExited }) {
       if (next >= total) stop();
     });
     return stop;
-  }, [calm, total]);
+  }, [total]);
 
   /* --- Enter: completa el archivo o abre el portafolio -------------------- */
   useEffect(() => {
