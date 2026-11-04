@@ -9,12 +9,11 @@
  *   done      el sitio está a la vista
  *
  * La intro se reproduce sola solo en la primera visita de la sesión, sin enlace
- * directo (#seccion), con movimiento activo y si el visitante no la apagó.
+ * directo (#seccion) y si el visitante no la apagó. Con movimiento reducido
+ * también sale, pero en calma: el código aparece entero, sin escribirse.
  * Las mismas reglas están copiadas en el script de index.html, que tapa la
  * página antes de pintar para que el hero no asome un instante.
  */
-
-import { motionEnabled } from '../lib/env.js';
 
 const SEEN_KEY = 'jms-intro-seen';   // sessionStorage
 const OFF_KEY = 'jms-intro';         // localStorage: 'off'
@@ -45,8 +44,7 @@ export function shouldAutoplay() {
   if (!isBrowser) return false;
   if (location.hash && location.hash !== '#hero') return false;
   if (read(sessionStorage, SEEN_KEY)) return false;
-  if (introDisabled()) return false;
-  return motionEnabled();
+  return !introDisabled();
 }
 
 export const introState = () => state;

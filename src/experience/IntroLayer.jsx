@@ -148,7 +148,8 @@ function IntroEditor({ onExited }) {
     const stop = onTick((_, now) => {
       const dt = Math.min(now - last, 100);
       last = now;
-      elapsed += dt;
+      // Un Enter o un toque puede adelantar el archivo: el reloj no retrocede
+      elapsed = Math.max(elapsed + dt, unitsRef.current * MS_PER_CHAR);
       const next = Math.min(total, Math.floor(elapsed / MS_PER_CHAR));
       if (next !== unitsRef.current) {
         unitsRef.current = next;

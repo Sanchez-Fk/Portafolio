@@ -17,10 +17,8 @@
   <script>
     (function () {
       try {
-        var d = document.documentElement, m = localStorage.getItem('jms-motion');
-        var reduce = m === 'off' || (m !== 'on' && matchMedia('(prefers-reduced-motion: reduce)').matches);
-        if (/[?&]motion=force/.test(location.search)) reduce = false;
-        if ((location.hash && location.hash !== '#hero') || reduce ||
+        var d = document.documentElement;
+        if ((location.hash && location.hash !== '#hero') ||
             sessionStorage.getItem('jms-intro-seen') || localStorage.getItem('jms-intro') === 'off') return;
         d.classList.add('intro-pending');
         setTimeout(function () { d.classList.remove('intro-pending'); }, 4000);
