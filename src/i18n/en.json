@@ -40,6 +40,8 @@
   "work.spartan.desc": "Live scoreboard for taekwondo competitions. It syncs up to 4 judges with a central display over WebSockets, on desktop and mobile, with round management. Validated in a real pilot in May 2026.",
   "work.flowy.type": "AI chat assistant",
   "work.flowy.desc": "An assistant for websites that answers with each business's own information, collects contacts with their consent and hands off to WhatsApp when needed. It installs as a widget and is managed from a panel.",
+  "work.miniBloques.type": "Online store with 3D",
+  "work.miniBloques.desc": "Catalog for a toy store selling mini-block figures. Each card shows the real box and, when flipped, the assembled character in 3D with Three.js, built brick by brick from the box photo. Cart and checkout straight to WhatsApp.",
   "skills.title": "Skills",
   "skills.lead": "What I use in my projects, grouped as in my CV. What I'm still learning is listed separately.",
   "skills.frontend": "Frontend",

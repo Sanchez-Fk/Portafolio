@@ -40,6 +40,8 @@
   "work.spartan.desc": "Marcador en vivo para competencias de taekwondo. Sincroniza hasta 4 jueces con una pantalla central mediante WebSockets, desde escritorio y móvil, con gestión de rounds. Validado en una prueba piloto real en mayo de 2026.",
   "work.flowy.type": "Asistente de chat con IA",
   "work.flowy.desc": "Asistente para sitios web que contesta con la información de cada negocio, recoge contactos con su autorización y pasa a WhatsApp cuando hace falta. Se instala como un widget y se administra desde un panel.",
+  "work.miniBloques.type": "Tienda en línea con 3D",
+  "work.miniBloques.desc": "Catálogo de una juguetería de figuras de mini bloques. Cada tarjeta muestra la caja real y, al voltearla, el personaje armado en 3D con Three.js, construido pieza por pieza a partir de la foto de la caja. Carrito y pedido directo por WhatsApp.",
   "skills.title": "Habilidades",
   "skills.lead": "Lo que uso en mis proyectos, agrupado como en mi CV. Lo que aún estoy aprendiendo aparece aparte.",
   "skills.frontend": "Frontend",

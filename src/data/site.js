@@ -23,6 +23,7 @@ import htmlLogo from '../assets/stack/html5.svg';
 import cssLogo from '../assets/stack/css.svg';
 import gitLogo from '../assets/stack/git.svg';
 import flowyCover from '../assets/projects/flowy.webp';
+import miniBloquesCover from '../assets/projects/mini-bloques.webp';
 
 export const contact = {
   email: 'josemanuel.sanchez.06@gmail.com',
@@ -56,6 +57,13 @@ export const projects = [
     url: 'https://flowy-panel.vercel.app/',
     cover: flowyCover,
     stack: [],
+  },
+  {
+    id: 'miniBloques',
+    title: 'Mini Bloques',
+    url: 'https://mini-bloques.vercel.app/',
+    cover: miniBloquesCover,
+    stack: ['JavaScript', 'Three.js', 'CSS', 'Python'],
   },
 ];
 
